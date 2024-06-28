@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Path to .env file
-ENV_FILE="../.env"
+ENV_FILE=${PWD}/.env
 
 # certificate authorities compose file
-COMPOSE_FILE_CA=../docker/docker-compose-ca.yaml
+COMPOSE_FILE_CA=${PWD}/docker/docker-compose-ca.yaml
 
 COMPOSE_FILES="-f ${COMPOSE_FILE_CA}"
 

@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Path to .env file
-ENV_FILE="../.env"
+ENV_FILE=${PWD}/.env
 
 # use this as the default docker-compose yaml definition
-COMPOSE_FILE_BASE=../docker/docker-compose-net.yaml
+COMPOSE_FILE_BASE=${PWD}/docker/docker-compose-net.yaml
 # certificate authorities compose file
-COMPOSE_FILE_CA=../docker/docker-compose-ca.yaml
+COMPOSE_FILE_CA=${PWD}/docker/docker-compose-ca.yaml
 # default database
 DATABASE="couchdb"
 # if database is couchdb then couch compose file
-COMPOSE_FILE_COUCH=../docker/docker-compose-couch.yaml
+COMPOSE_FILE_COUCH=${PWD}/docker/docker-compose-couch.yaml
 
 COMPOSE_FILES="-f ${COMPOSE_FILE_CA} -f ${COMPOSE_FILE_BASE}"
 
