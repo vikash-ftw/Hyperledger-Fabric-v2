@@ -1,0 +1,23 @@
+# organizations child directories
+organizations/fabric-ca/
+organizations/ordererOrganizations/
+organizations/peerOrganizations/
+
+# channel-artifacts
+channel-artifcats/
+
+# logs
+logs/
+
+# system-genesis-block
+system-genesis-block/
+
+# tar files
+*.tar
+*.tar.gz
+
+
+
+
+
+

@@ -1,0 +1,119 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# define couch containers per peer
+
+version: "2"
+
+networks:
+  fbn:
+
+# currently 4 couch for 4 peers
+services:
+  couchdb0:
+    container_name: couchdb0
+    image: couchdb:$IMAGE_TAG_COUCHDB
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb0:/opt/couchdb/data
+    ports:
+      - "5984:5984"
+    networks:
+      - fbn
+
+  peer0.org1.example.com:
+    environment:
+      # Ledger Management by CouchDB
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - couchdb0
+
+  couchdb1:
+    container_name: couchdb1
+    image: couchdb:$IMAGE_TAG_COUCHDB
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb1:/opt/couchdb/data
+    ports:
+      - "6984:5984"
+    networks:
+      - fbn
+
+  peer1.org1.example.com:
+    environment:
+      # Ledger Management by CouchDB
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - couchdb1
+
+  couchdb2:
+    container_name: couchdb2
+    image: couchdb:$IMAGE_TAG_COUCHDB
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb2:/opt/couchdb/data
+    ports:
+      - "7984:5984"
+    networks:
+      - fbn
+
+  peer2.org1.example.com:
+    environment:
+      # Ledger Management by CouchDB
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - couchdb2
+
+  couchdb3:
+    container_name: couchdb3
+    image: couchdb:$IMAGE_TAG_COUCHDB
+    # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+    # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=adminpw
+    # Comment/Uncomment the port mapping if you want to hide/expose the CouchDB service,
+    # for example map it to utilize Fauxton User Interface in dev environments.
+    volumes:
+      - /var/hyperledger/couchdb3:/opt/couchdb/data
+    ports:
+      - "8984:5984"
+    networks:
+      - fbn
+
+  peer3.org1.example.com:
+    environment:
+      # Ledger Management by CouchDB
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5984
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=admin
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=adminpw
+    depends_on:
+      - couchdb3

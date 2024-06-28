@@ -1,0 +1,28 @@
+{
+  "name": "server-nodejs",
+  "version": "1.0.0",
+  "description": "Backend Server to server request for Smartcontract in Fabric",
+  "type": "module",
+  "main": "./src/app.js",
+  "engines": {
+    "node": ">=20.14"
+  },
+  "scripts": {
+    "start": "node -r dotenv/config ./src/app.js"
+  },
+  "keywords": [
+    "express",
+    "node",
+    "javascript"
+  ],
+  "engineStrict": true,
+  "author": "Vikash Batham",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fabric-ca-client": "^2.2.20",
+    "fabric-network": "^2.2.20"
+  }
+}
