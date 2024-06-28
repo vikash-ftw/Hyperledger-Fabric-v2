@@ -16,7 +16,6 @@ CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
 CC_SRC_PATH="organizations/clientOrg/contract/"
 CHAINCODE_NAME="fabricLedgerContract"
-export FABRIC_CFG_PATH=$PWD/../config/
 
 echo
 echo " ____    _____      _      ____    _____ "
@@ -29,6 +28,11 @@ echo "Deploy smart contract fabric blockchain in Channel - $CHANNEL_NAME"
 echo
 echo "Chaincode Name - $CHAINCODE_NAME with version - $VERSION"
 echo
+
+# Adding fabric bin to path
+export PATH=${PWD}/../bin:$PATH
+# Adding fabric config 
+export FABRIC_CFG_PATH=$PWD/../config/
 
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem

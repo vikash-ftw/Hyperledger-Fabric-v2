@@ -6,8 +6,11 @@ organizations/peerOrganizations/
 # channel-artifacts
 channel-artifacts/
 
-# logs
-logs/
+# exclude everything in logs
+logs/*
+
+# but logs should be there
+!logs/.gitkeep
 
 # system-genesis-block
 system-genesis-block/

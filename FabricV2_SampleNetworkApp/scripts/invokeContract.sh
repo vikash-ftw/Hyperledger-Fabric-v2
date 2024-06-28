@@ -9,6 +9,9 @@ MAX_RETRY=5
 VERBOSE=true
 CHAINCODE_NAME="fabricLedgerContract"
 
+# Adding fabric bin to path
+export PATH=${PWD}/../bin:$PATH
+# Adding fabric config
 export FABRIC_CFG_PATH=$PWD/../config/
 
 export CORE_PEER_TLS_ENABLED=true

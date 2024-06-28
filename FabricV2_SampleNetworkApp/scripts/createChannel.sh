@@ -20,6 +20,9 @@ echo
 echo "Creating Fabric Network Channel - $CHANNEL_NAME"
 echo
 
+# Adding fabric bin to path
+export PATH=${PWD}/../bin:$PATH
+
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 

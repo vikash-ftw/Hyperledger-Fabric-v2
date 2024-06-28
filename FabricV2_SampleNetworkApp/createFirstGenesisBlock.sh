@@ -1,3 +1,5 @@
+# Adding fabric bin to path
+export PATH=${PWD}/../bin:$PATH
 # using FABRIC_CFG_PATH to set the path of configtx.yaml file
 export FABRIC_CFG_PATH=$PWD/configtx
 
