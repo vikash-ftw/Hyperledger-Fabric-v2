@@ -4,7 +4,7 @@ organizations/ordererOrganizations/
 organizations/peerOrganizations/
 
 # channel-artifacts
-channel-artifcats/
+channel-artifacts/
 
 # logs
 logs/
