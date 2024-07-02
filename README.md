@@ -1,6 +1,6 @@
 ## ---- Steps to run Fabric V2 network ----
 
-### **Fresh Setup on New Machine**
+### **-- Fresh Setup on New Machine --**
 
 1. Make sure to remove files if any present under /var/hyperledger/ directory of your system.
 
@@ -48,7 +48,7 @@
 
 13. Now our client app is ready to handle request and invoke chaincode - now test the controllers
 
-### **Setup Hyperledger Explorer for Dashboard Monitoring**
+### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
 
 1. Copy the **orderersOrganizations** and **peerOrganizations** from your already running fabric network's **organizations** directory into **./fabric-explorer/organizations** directory.
 
@@ -58,8 +58,8 @@
 
    - change "name" key to your running fabric network's name.
    - go to 'organizations' key and change the priv_sk to private key in exist in your copied peerOrganizations folder '"adminPrivateKey": {
-     "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk" : priv_sk -> <your-key>\_sk
-     },'
+     "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"}'
+     **copy your private key from keystore : priv_sk -> <your-key>\_sk**
 
 4. Same network to be mentioned in **config.json** file under 'network-configs' key attribute.
 
