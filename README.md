@@ -12,6 +12,7 @@
    -- Save your changes and close the file.
 
 > :memo: **Note:** We can generate crypto-materials via cryptogen(For testing and development purpose) or Fabric CA(For Production purpose) - We will use Fabric CA in our case.
+
 > :memo: **Note:** From now on 'FabricV2_SampleNetworkApp' will be our project_home.
 
 4. Run _./scripts/start_fabric-ca.sh_ from project_home dir -> to start fabric-ca containers needed for crypto-materials
