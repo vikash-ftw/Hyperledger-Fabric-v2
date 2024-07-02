@@ -47,3 +47,28 @@
     -- Newly created user identity using fabric CA will be used to invoke chaincode on our network.
 
 13. Now our client app is ready to handle request and invoke chaincode - now test the controllers
+
+### **Setup Hyperledger Explorer for Dashboard Monitoring**
+
+1. Copy the **orderersOrganizations** and **peerOrganizations** from your already running fabric network's **organizations** directory into **./fabric-explorer/organizations** directory.
+
+2. Make sure the fabric network's 'COMPOSE_PROJECT_NAME' should be mention same as in .env file in ./fabric-explorer
+
+3. Now edit **.connection-profile/test-network.json** file and make changes ->
+
+   - change "name" key to your running fabric network's name.
+   - go to 'organizations' key and change the priv_sk to private key in exist in your copied peerOrganizations folder '"adminPrivateKey": {
+     "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk" : priv_sk -> <your-key>\_sk
+     },'
+
+4. Same network to be mentioned in **config.json** file under 'network-configs' key attribute.
+
+   - Under 'network-configs' -> "name" can be any name you want to give to your explorer dashboard
+
+5. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
+
+6. After all these changes : Run _docker-compose up -d_ from './fabric-explorer' dir => To start the explorer containers.
+
+   - To stop or down (to remove) container then run same docker-compose command with stop or down command.
+
+7. Now open the explorer dashboard in browser on _port - 8080_.
