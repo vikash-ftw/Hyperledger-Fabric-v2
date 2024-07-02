@@ -1,0 +1,5 @@
+# organizations peer and orderer orgs folders
+organizations/*
+
+# but organizations folder should be there
+!organizations/.gitkeep
