@@ -19,7 +19,7 @@
     }
   },
   "channels": {
-    "mychannel": {
+    "samplechannel": {
       "peers": {
         "peer0.org1.example.com": {}
       }
