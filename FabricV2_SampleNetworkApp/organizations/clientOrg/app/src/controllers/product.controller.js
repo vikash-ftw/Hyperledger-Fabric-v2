@@ -29,9 +29,9 @@ const addProduct = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     const result = await contract.submitTransaction(
@@ -65,9 +65,9 @@ const getProductById = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     let result = await contract.evaluateTransaction(
@@ -100,9 +100,9 @@ const deleteProductById = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     const result = await contract.submitTransaction(
@@ -142,9 +142,9 @@ const updateProductOwner = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     const result = await contract.submitTransaction(
@@ -189,9 +189,9 @@ const queryOnProductOwner = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     const result = await contract.evaluateTransaction(
@@ -234,9 +234,9 @@ const queryOnProductName = asyncHandler(async (req, res) => {
 
   try {
     const instance = await initiateConnection();
-    console.log("-- Fetching Channel --");
+    console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
-    console.log("-- Fetching Contract --");
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = await network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
     const result = await contract.evaluateTransaction(
