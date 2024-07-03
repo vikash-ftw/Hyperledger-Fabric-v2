@@ -44,3 +44,5 @@ P3PORT=6051
 
 echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT $P2PORT $P3PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.json
 echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT $P2PORT $P3PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.yaml
+
+echo "-- Generated CCP json and yaml files in ./organizations/peerOrganizations/ directory --"
