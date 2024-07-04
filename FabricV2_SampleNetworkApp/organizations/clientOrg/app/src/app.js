@@ -15,29 +15,14 @@ app.use(
 
 app.use(express.json());
 
-const org = process.env.ORG_MSP;
-const userId = process.env.ORG_USER_ID;
-
-import { registerUser } from "./services/userRegister.service.js";
-import { initiateConnection } from "./utils/connectionHandler.js";
-
-const register = async () => {
-  console.log("Registering user if not registered");
-  try {
-    let result = await registerUser({ OrgMSP: org, userId: userId });
-    console.log("USER CREATED : ", result);
-    return result;
-  } catch (error) {
-    return error;
-  }
-};
+// import new gRPC connection
+import { initiateGRPC_Connection } from "./utils/gRPCGatewayConnectionHandler.js";
 
 const startServer = async () => {
   try {
-    const user = await register();
-    console.log("User created or not : ", user);
-    const instance = await initiateConnection();
-    console.log("instance connection: " + instance);
+    console.log("Fetching gRPC Gateway instance ...");
+    const instance = await initiateGRPC_Connection();
+    console.log("gRPC instance connection in app: " + instance);
     app.listen(port, () => {
       console.log(`Server is listening at port- ${port}`);
     });
