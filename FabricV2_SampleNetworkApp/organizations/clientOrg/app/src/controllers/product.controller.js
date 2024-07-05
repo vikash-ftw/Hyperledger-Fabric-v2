@@ -32,25 +32,32 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
+    const contract = network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
-    const result = await contract.submitTransaction(
-      "addProductDataOnChain",
+
+    // create a transaction
+    const transaction = contract.createTransaction("addProductDataOnChain");
+    // get transaction Id
+    const txnId = transaction.getTransactionId();
+    console.log(`Txn Id - ${txnId}`);
+    // now submit the transaction with required args
+    const bufferResp = await transaction.submit(
       productNumber,
       productManufacturer,
       productName,
       productOwnerName
     );
-    console.log("** Transaction Committed: ", result.toString());
+    console.log("** Transaction Committed **");
+    console.log("Buffer Resp - ", bufferResp);
     res
       .status(200)
       .json(new ApiResponse(200, {}, "Product Added Successfully"));
   } catch (error) {
-    const errorMessage = extractMessage(error.message);
+    let errorMessage = extractMessage(error.message);
     if (errorMessage.includes("already exist!")) {
       throw new ApiError(400, errorMessage);
     }
-    throw new ApiError(500, `Chaincode Error: ${error.message}`);
+    throw new ApiError(500, `Chaincode Error - ${error.message}`);
   }
 });
 
@@ -68,8 +75,8 @@ const getProductById = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
-    console.log("-- Initiating Transaction.. --");
+    const contract = network.getContract(chaincodeName);
+
     let result = await contract.evaluateTransaction(
       "getProductData",
       productNumber
@@ -103,18 +110,24 @@ const deleteProductById = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
+    const contract = network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
-    const result = await contract.submitTransaction(
-      "deleteProduct",
-      productNumber
-    );
-    console.log("** Transaction Committed: ", result.toString());
+
+    // create a transaction
+    const transaction = contract.createTransaction("deleteProduct");
+    // get transaction Id
+    const txnId = transaction.getTransactionId();
+    console.log(`Txn Id - ${txnId}`);
+    // now submit the transaction with required args
+    const bufferResp = await transaction.submit(productNumber);
+    console.log("** Transaction Committed **");
+    console.log("Buffer Resp - ", bufferResp);
+    console.log("**** Product Deleted ****");
     res
       .status(200)
       .json(new ApiResponse(200, {}, "Product Deleted Successfully"));
   } catch (error) {
-    const errorMessage = extractMessage(error.message);
+    let errorMessage = extractMessage(error.message);
     if (errorMessage?.includes("does not exist!")) {
       throw new ApiError(400, errorMessage);
     }
@@ -145,15 +158,23 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
+    const contract = network.getContract(chaincodeName);
     console.log("-- Initiating Transaction.. --");
-    const result = await contract.submitTransaction(
-      "updateProductOwner",
+
+    // create a transaction
+    const transaction = contract.createTransaction("updateProductOwner");
+    // get transaction Id
+    const txnId = transaction.getTransactionId();
+    console.log(`Txn Id - ${txnId}`);
+    // now submit the transaction with required args
+    const bufferResp = await transaction.submit(
       productNumber,
       oldOwnerName,
       newOwnerName
     );
-    console.log("** Transaction Committed: ", result.toString());
+    console.log("** Transaction Committed **");
+    console.log("Buffer Resp - ", bufferResp);
+    console.log("**** Product Asset Updated ****");
     res
       .status(200)
       .json(new ApiResponse(200, {}, "Product's Owner Updated Successfully"));
@@ -192,8 +213,8 @@ const queryOnProductOwner = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
-    console.log("-- Initiating Transaction.. --");
+    const contract = network.getContract(chaincodeName);
+
     const result = await contract.evaluateTransaction(
       "queryProductData",
       selectorQueryString
@@ -237,8 +258,8 @@ const queryOnProductName = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Channel - ${channelName} --`);
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
-    const contract = await network.getContract(chaincodeName);
-    console.log("-- Initiating Transaction.. --");
+    const contract = network.getContract(chaincodeName);
+
     const result = await contract.evaluateTransaction(
       "queryProductData",
       selectorQueryString
@@ -259,7 +280,7 @@ const queryOnProductName = asyncHandler(async (req, res) => {
   }
 });
 
-// To extract error message from chaincode error stack
+// To extract error message from chaincode error stack and simplify error message for logging
 function extractMessage(errorString) {
   const messageKey = "message=";
   const messageStart = errorString.indexOf(messageKey);

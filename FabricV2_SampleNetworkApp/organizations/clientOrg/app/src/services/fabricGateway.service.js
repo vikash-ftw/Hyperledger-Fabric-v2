@@ -38,7 +38,7 @@ const singletonConnection = (function () {
     //   },
     // };
 
-    // // Using default Handling option if not specified explicitly
+    // // Using default event Handling option if not specified explicitly
     const connectOptions = {
       wallet,
       identity: userId,
