@@ -57,22 +57,23 @@
 7. Run _./createFirstGenesisBlock.sh_ from project_home -> to create genesis block of our network
 
    - Check out ./system-genesis-block folder created under project_home containing genesis.block file
+   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
 8. Run _./scripts/start_network.sh_ from project_home -> to create peers, orderers and couchDB and other containers
 
    - Check out new peers, orderers and couchDB containers up and running
    - Also check out /var/hyperledger/ folder (volume dir for all the created containers)
-   - Make sure none of the container goes in 'exit' state so wait for 1 min and then check containers.
+   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
 9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join all peers on this channel
 
    - Check out ./channel-artifacts dir containing 3 files :- anchor and channel .tx files and also .block file
-   - Make sure none of the container goes in 'exit' state so wait for 1 min and then check containers.
+   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
 10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode
     - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file)
     - Also check out new dev-peer docker containers up and running to handle chaincode invocation request
-    - Make sure none of the container goes in 'exit' state so wait for 1 min and then check containers.
+    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers.**
 11. (For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
 
     - Check if invoked transaction is committed or failed - if committed then chaincode is fine and ready to handle app request
@@ -93,7 +94,9 @@
 
 > :memo: **Note:** From now on 'fabric-explorer' directory will be for all the below mentioned changes.
 
-2. Make sure the fabric network's 'COMPOSE_PROJECT_NAME' should be mention same as in .env file in ./fabric-explorer
+2. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
+
+   - So that explorer containers can be created in same docker network in which fabric network is running.
 
 3. Now edit **.connection-profile/test-network.json** file and make changes ->
 
@@ -147,7 +150,8 @@
 
    - If the error is related to "Failed to create identity" then there might be issue the way you copied the private key in **test-network.json**.
    - Or it may be related to wrong docker network name. **So please check the fabric-explorer container logs**
-   - Also after resolving the error delete the volumes created by fabric explorer
+   - Also after resolving the error, delete the volumes created by fabric explorer
+
      - These two volumes are:
 
        1. fabric_net_pgdata
