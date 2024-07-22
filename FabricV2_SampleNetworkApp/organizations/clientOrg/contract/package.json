@@ -14,7 +14,8 @@
   "author": "Vikash Batham",
   "license": "Apache-2.0",
   "dependencies": {
-    "fabric-contract-api": "^2.1.2",
-    "fabric-shim": "^2.1.2"
+    "fabric-contract-api": "^2.5.6",
+    "fabric-shim": "^2.5.6",
+    "fabric-common": "^2.2.20"
   }
 }
