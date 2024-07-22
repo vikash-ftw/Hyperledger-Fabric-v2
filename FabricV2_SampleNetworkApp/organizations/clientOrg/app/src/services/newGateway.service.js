@@ -87,27 +87,27 @@ const gRPC_SingletonConnection = (function () {
   }
 
   async function createConnection() {
-    const client = await newGrpcConnection();
-    const connectOptions = {
-      client,
-      identity: await newIdentity(),
-      signer: await newSigner(),
-      // Default timeouts for different gRPC calls
-      evaluateOptions: () => {
-        return { deadline: Date.now() + 5000 }; // 5 seconds
-      },
-      endorseOptions: () => {
-        return { deadline: Date.now() + 15000 }; // 15 seconds
-      },
-      submitOptions: () => {
-        return { deadline: Date.now() + 5000 }; // 5 seconds
-      },
-      commitStatusOptions: () => {
-        return { deadline: Date.now() + 60000 }; // 1 minute
-      },
-    };
-
     try {
+      const client = await newGrpcConnection();
+      const connectOptions = {
+        client,
+        identity: await newIdentity(),
+        signer: await newSigner(),
+        // Default timeouts for different gRPC calls
+        evaluateOptions: () => {
+          return { deadline: Date.now() + 5000 }; // 5 seconds
+        },
+        endorseOptions: () => {
+          return { deadline: Date.now() + 15000 }; // 15 seconds
+        },
+        submitOptions: () => {
+          return { deadline: Date.now() + 5000 }; // 5 seconds
+        },
+        commitStatusOptions: () => {
+          return { deadline: Date.now() + 60000 }; // 1 minute
+        },
+      };
+
       const gateway = connect(connectOptions);
       console.log("gRPC gateway is created with peer0 - ", gateway);
       return gateway;
@@ -117,12 +117,27 @@ const gRPC_SingletonConnection = (function () {
   }
 
   return {
-    getConnection: function () {
+    getConnection: async function () {
       if (!instance) {
         instance = createConnection();
       }
 
       return instance;
+    },
+    closeConnection: async function () {
+      try {
+        const gatewayInstance = await instance;
+        if (gatewayInstance) {
+          console.log("Closing Gateway Instance ...");
+          gatewayInstance.close();
+          instance = null;
+          console.log("Gateway Connection Closed!");
+        } else {
+          console.log("Invalid Gateway Instance!!");
+        }
+      } catch (error) {
+        console.log(`Error closing the gateway connection: ${error.message}`);
+      }
     },
   };
 })();

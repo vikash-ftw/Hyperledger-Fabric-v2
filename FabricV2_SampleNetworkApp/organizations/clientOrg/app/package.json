@@ -22,8 +22,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "fabric-ca-client": "^2.2.20",
-    "fabric-network": "^2.2.20",
     "@grpc/grpc-js": "^1.10",
     "@hyperledger/fabric-gateway": "^1.5"
   }

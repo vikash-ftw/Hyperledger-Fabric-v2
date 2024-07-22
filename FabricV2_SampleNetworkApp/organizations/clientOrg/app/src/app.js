@@ -16,13 +16,17 @@ app.use(
 app.use(express.json());
 
 // import new gRPC connection
-import { initiateGRPC_Connection } from "./utils/gRPCGatewayConnectionHandler.js";
+import {
+  initiateGRPC_Connection,
+  close_GRPC_Connection,
+} from "./utils/gRPCGatewayConnectionHandler.js";
 
 const startServer = async () => {
   try {
     console.log("Fetching gRPC Gateway instance ...");
     const instance = await initiateGRPC_Connection();
     console.log("gRPC instance connection in app: " + instance);
+    console.log("** gRPC Gateway instance created successfully **");
     app.listen(port, () => {
       console.log(`Server is listening at port- ${port}`);
     });
