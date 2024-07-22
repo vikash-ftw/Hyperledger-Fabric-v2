@@ -21,35 +21,38 @@ const singletonConnection = (function () {
   let instance = null;
 
   async function createConnection() {
-    let num = Number(org.match(/\d/g).join(""));
-    const ccp = getCCP(num);
-
-    const wallet = await buildWallet(Wallets, walletPath);
-
-    // // Gateway Options
-
-    // // Defining Event Handling option - eventHandlerOptions
-    // const connectOptions = {
-    //   wallet,
-    //   identity: userId,
-    //   discovery: { enabled: true, asLocalhost: true },
-    //   eventHandlerOptions: {
-    //     strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ALLFORTX,
-    //   },
-    // };
-
-    // // Using default event Handling option if not specified explicitly
-    const connectOptions = {
-      wallet,
-      identity: userId,
-      discovery: { enabled: true, asLocalhost: true },
-    };
-    const gateway = new Gateway();
-
     try {
+      let num = Number(org.match(/\d/g).join(""));
+      const ccp = getCCP(num);
+
+      const wallet = await buildWallet(Wallets, walletPath);
+
+      // // Gateway Options
+
+      // // Defining Event Handling option - eventHandlerOptions
+      // const connectOptions = {
+      //   wallet,
+      //   identity: userId,
+      //   discovery: { enabled: true, asLocalhost: true },
+      //   eventHandlerOptions: {
+      //     strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ALLFORTX,
+      //   },
+      // };
+
+      // // Using default event Handling option if not specified explicitly
+      const connectOptions = {
+        wallet,
+        identity: userId,
+        discovery: { enabled: true, asLocalhost: true },
+      };
+      const gateway = new Gateway();
+
       await gateway.connect(ccp, connectOptions);
 
-      console.log("gateway object created in fabricGateway.js", gateway);
+      console.log(
+        "Gateway object created in fabricGateway.service.js",
+        gateway
+      );
 
       return gateway;
     } catch (error) {
@@ -58,12 +61,27 @@ const singletonConnection = (function () {
   }
 
   return {
-    getConnection: function () {
+    getConnection: async function () {
       if (!instance) {
         instance = createConnection();
       }
 
       return instance;
+    },
+    closeConnection: async function () {
+      try {
+        const gatewayInstance = await instance;
+        if (gatewayInstance && gatewayInstance instanceof Gateway) {
+          console.log("Closing Gateway connection...");
+          gatewayInstance.disconnect();
+          instance = null;
+          console.log("Gateway Connection Closed !");
+        } else {
+          console.log("Invalid Gateway Instance!!");
+        }
+      } catch (error) {
+        console.log(`Error closing the gateway connection: ${error.message}`);
+      }
     },
   };
 })();

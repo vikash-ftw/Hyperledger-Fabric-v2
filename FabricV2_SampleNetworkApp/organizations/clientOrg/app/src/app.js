@@ -19,7 +19,10 @@ const org = process.env.ORG_MSP;
 const userId = process.env.ORG_USER_ID;
 
 import { registerUser } from "./services/userRegister.service.js";
-import { initiateConnection } from "./utils/connectionHandler.js";
+import {
+  initiateConnection,
+  closeConnection,
+} from "./utils/connectionHandler.js";
 
 const register = async () => {
   console.log("Registering user if not registered");
@@ -36,7 +39,9 @@ const startServer = async () => {
   try {
     const user = await register();
     console.log("User created or not : ", user);
+    console.log("Checking Gateway Connection...");
     const instance = await initiateConnection();
+    console.log("** Gateway Connection Established **");
     console.log("instance connection: " + instance);
     app.listen(port, () => {
       console.log(`Server is listening at port- ${port}`);
