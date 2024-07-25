@@ -53,7 +53,7 @@ class FabricLedgerContract extends Contract {
     if (exists) {
       throw new Error(`The product with id - ${productNumber} already exist!`);
     }
-    const timestamp = new Date().toISOString().replace("Z", "+00:00");
+    const timestamp = new Date().toISOString();
     const product = {
       productNumber,
       productManufacturer,
@@ -93,7 +93,7 @@ class FabricLedgerContract extends Contract {
         `Product's current owner name is not matching with given owner name - ${oldOwnerName}`
       );
     }
-    const timestamp = new Date().toISOString().replace("Z", "+00:00");
+    const timestamp = new Date().toISOString();
     assetJSON.productOwnerName = newOwnerName;
     assetJSON.updatedAt = timestamp;
     return ctx.stub.putState(
