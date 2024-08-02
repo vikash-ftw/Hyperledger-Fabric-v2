@@ -3,14 +3,11 @@
 
 CHANNEL_NAME="$1"
 VERSION="$2"
-DELAY="$3"
-MAX_RETRY="$4"
-VERBOSE="$5"
 : ${CHANNEL_NAME:="samplechannel"}
 : ${VERSION:="1"}
-: ${DELAY:="3"}
-: ${MAX_RETRY:="3"}
-: ${VERBOSE:="false"}
+
+MAX_RETRY="3"
+
 CC_SRC_LANGUAGE="javascript"
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
 CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
@@ -24,7 +21,7 @@ echo "\___ \    | |     / _ \   | |_) |   | |  "
 echo " ___) |   | |    / ___ \  |  _ <    | |  "
 echo "|____/    |_|   /_/   \_\ |_| \_\   |_|  "
 echo
-echo "Deploy smart contract fabric blockchain in Channel - $CHANNEL_NAME"
+echo "Deploy Fabric SmartContract on Channel - $CHANNEL_NAME"
 echo
 echo "Chaincode Name - $CHAINCODE_NAME with version - $VERSION"
 echo
@@ -90,7 +87,7 @@ packageChaincode() {
   res=$?
   set +x
   cat ./logs/pkg_chaincode_log.txt
-  verifyResult $res "Packaged on peer0 of ${ORG}" "Chaincode packaging on peer0 of ${ORG} has failed"
+  verifyResult $res "Chaincode is Packaged for ${ORG}" "Failed to package chaincode for ${ORG}!"
 }
 
 
@@ -122,12 +119,24 @@ installChaincode() {
 
 				# install chaincode on peer
 				echo "-- InProcess installing chaincode on peer${i} of ${org} --"
-				set -x
-        peer lifecycle chaincode install ${CHAINCODE_NAME}.tar.gz >&./logs/install_chaincode_log.txt
-        res=$?
-        set +x
-				cat ./logs/install_chaincode_log.txt
-				verifyResult $res "peer${i} of chaincode installed" "peer${i} failed to install chaincode"
+        local rc=1
+	      local COUNTER=0
+        while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
+          sleep 1
+          if [ $COUNTER -gt 0 ]; then
+            echo "Command Failed - Retrying ..."
+            echo "-- Retry Attempt $COUNTER --"
+            sleep 2
+          fi
+          set -x
+          peer lifecycle chaincode install ${CHAINCODE_NAME}.tar.gz >&./logs/install_chaincode_log.txt
+          res=$?
+          set +x
+          rc=$res 	
+		      COUNTER=$((COUNTER + 1))
+          cat ./logs/install_chaincode_log.txt
+        done
+				verifyResult $res "Chaincode Installed on peer${i}" "Failed to install Chaincode on peer${i}!"
 				sleep 2
 			done
 		else
@@ -149,7 +158,7 @@ queryInstalled() {
   set +x
   cat ./logs/query_install_chaincode_log.txt
 	PACKAGE_ID=$(sed -n "/${CHAINCODE_NAME}_v${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" ./logs/query_install_chaincode_log.txt)
-  verifyResult $res "Query installed on peer0 of ${ORG}" "Query install on peer0 of ${ORG} has FAILED!"
+  verifyResult $res "Chaincode Query executed successfully for peer of ${ORG}" "Chaincode Query Failed for peer of ${ORG}!"
 }
 
 # approveForMyOrg VERSION PEER ORG (include Channel specs)
@@ -175,7 +184,7 @@ checkCommitReadiness() {
   local ORG=""
   ORG=${ORG_NAMES[0]} # usign Org1 from Org array
   setGlobalVarsForOrg1
-  echo "Attempting to check the commit readiness of the chaincode definition on peer0 of ${ORG}, Retry after $DELAY seconds."
+  echo "Attempting to check the commit readiness of the chaincode definition on peer0 of ${ORG}"
   sleep 2
   set -x
   peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME --name ${CHAINCODE_NAME} --version ${VERSION} --sequence ${VERSION} --output json >&./logs/commitReadiness_chaincode_log.txt
@@ -195,13 +204,24 @@ commitChaincodeDefinition() {
   # while 'peer chaincode' command can get the orderer endpoint from the
   # peer (if join was successful), let's supply it directly as we know
   # it using the "-o" option
-  sleep 2
-  set -x
-  peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CHAINCODE_NAME} --version ${VERSION} --sequence ${VERSION} >&./logs/chaincode_peer_commit_log.txt
-  res=$?
-  set +x
-  cat ./logs/chaincode_peer_commit_log.txt
-  verifyResult $res "Chaincode commit on ${CHANNEL_NAME} in endorsing peer of ${ORG} SUCCESS" "Chaincode commit on ${CHANNEL_NAME} in endorsing peer of ${ORG} Failed!"
+  local rc=1
+	local COUNTER=0
+  while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
+    sleep 1
+    if [ $COUNTER -gt 0 ]; then
+			echo "Command Failed - Retrying ..."
+			echo "-- Retry Attempt $COUNTER --"
+			sleep 2
+		fi
+    set -x
+    peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CHAINCODE_NAME} --version ${VERSION} --sequence ${VERSION} >&./logs/chaincode_peer_commit_log.txt
+    res=$?
+    set +x
+    rc=$res 	
+		COUNTER=$((COUNTER + 1))
+    cat ./logs/chaincode_peer_commit_log.txt
+  done
+  verifyResult $res "Chaincode committed on ${CHANNEL_NAME} for peers of ${ORG}" "Failed!! - Chaincode failed to commit on ${CHANNEL_NAME} for peers of ${ORG}!"
 }
 
 # queryCommitted ORG (include Channel specs)
@@ -219,7 +239,7 @@ queryCommitted() {
   set +x
   echo
   cat ./logs/query_commit_chaincode_log.txt
-  verifyResult $res "Query commit success on ${ORG} on channel '$CHANNEL_NAME'" "Query commit FAILED! on ${ORG} on channel '$CHANNEL_NAME'"
+  verifyResult $res "Chaincode Commit Query on ${CHANNEL_NAME} is executed successfully" "Failed!! - Chaincode Commit Query on ${CHANNEL_NAME} failed!"
 }
 
 ## at first we package the chaincode
@@ -244,7 +264,7 @@ commitChaincodeDefinition
 queryCommitted
 
 echo
-echo "========= Fabric smart contract successfully deployed on channel $CHANNEL_NAME  =========== "
+echo "========= Fabric SmartContract successfully deployed on channel $CHANNEL_NAME  =========== "
 
 echo
 echo " _____   _   _   ____   "
