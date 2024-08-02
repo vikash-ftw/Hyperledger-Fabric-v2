@@ -6,36 +6,9 @@
 
 2. Run _./loadFabricDependencies.sh_ -> to install all fabric binaries of specific version in your cloned project repo.
    - Check new folders created by running above script - bin, config and fabric-samples dir created.
-3. Change ledger stateDatabase in downloaded fabric base config files -> go to ./config folder and open _core.yaml_ file
-   - We are using CouchDB to handle our stateDatabase therefore in core.yaml go to 'ledger' section and change 'stateDatabase' parameter from goleveldb -> CouchDB :- Ex. 'stateDatabase: CouchDB'
-   - Follow this example ->
-     ```
-     ledger:
-        state:
-           stateDatabase: CouchDB
-           totalQueryLimit: 100000
-           couchDBConfig:
-              couchDBAddress: 127.0.0.1:5984
-              username:
-              password:
-              maxRetries: 3
-              maxRetriesOnStartup: 10
-              requestTimeout: 35s
-              internalQueryLimit: 1000
-              maxBatchUpdateSize: 1000
-              # Warm indexes after every N blocks.
-              # This option warms any indexes that have been
-              # deployed to CouchDB after every N blocks.
-              # A value of 1 will warm indexes after every block commit,
-              # to ensure fast selector queries.
-              # Increasing the value may improve write efficiency of peer and CouchDB,
-              # but may degrade query response time.
-              warmIndexesAfterNBlocks: 1
-              createGlobalChangesDB: false
-              cacheSize: 128
-     ```
-   - Make sure 'warmIndexesAfterNBlocks' is present and 'cacheSize' value is recommended to be '128'
-   - Now Save your changes and close the file.
+3. Check ledger state related configs in 'FabricV2_SampleNetworkApp/docker/docker-compose-couch.yaml' file.
+   - You can change CouchDB related configs in each _Peer_ defined for each _couchDB_ container. Just change environment values defined in _Peer_.
+   - For more info follow this doc - [doc_link](https://hyperledger-fabric.readthedocs.io/en/release-2.2/couchdb_as_state_database.html)
 
 > :memo: **Note:** We can generate crypto-materials via cryptogen(For testing and development purpose) or Fabric CA(For Production purpose) - We will use Fabric CA in our case.
 
