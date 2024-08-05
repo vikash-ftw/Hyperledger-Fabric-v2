@@ -174,7 +174,7 @@ approveForMyOrg() {
   res=$?
   set +x
   cat ./logs/approve_org_log.txt
-  verifyResult $res "Chaincode definition approved on peer0 of ${ORG} on channel '$CHANNEL_NAME' SUCCESSFULL" "Chaincode definition approved on peer0 of ${ORG} on channel '$CHANNEL_NAME' FAILED!"
+  verifyResult $res "Chaincode definition approved on peer0 of ${ORG} on channel '$CHANNEL_NAME' SUCCESSFULL" "Chaincode definition approval Failed on peer0 of ${ORG} on channel '$CHANNEL_NAME'!"
 }
 
 # checkCommitReadiness VERSION PEER ORG (include Channel specs)
@@ -239,7 +239,7 @@ queryCommitted() {
   set +x
   echo
   cat ./logs/query_commit_chaincode_log.txt
-  verifyResult $res "Chaincode Commit Query on ${CHANNEL_NAME} is executed successfully" "Failed!! - Chaincode Commit Query on ${CHANNEL_NAME} failed!"
+  verifyResult $res "Chaincode Commit Query on ${CHANNEL_NAME} is executed successfully" "Failed!! - Chaincode Commit Query execution Failed on ${CHANNEL_NAME}!"
 }
 
 ## at first we package the chaincode
