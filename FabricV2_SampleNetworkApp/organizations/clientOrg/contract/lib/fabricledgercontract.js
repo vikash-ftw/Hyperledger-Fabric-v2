@@ -40,7 +40,7 @@ class FabricLedgerContract extends Contract {
    */
 
   // Create An Asset
-  async addProductDataOnChain(
+  async addProductData(
     ctx,
     productNumber,
     productManufacturer,
@@ -62,10 +62,13 @@ class FabricLedgerContract extends Contract {
       createdAt: timestamp,
       updatedAt: timestamp,
     };
-    return ctx.stub.putState(
-      productNumber,
-      Buffer.from(JSON.stringify(product))
-    );
+
+    // create Buffer
+    const assetBuffer = Buffer.from(JSON.stringify(product));
+    // add event
+    ctx.stub.setEvent("addProductEvent", assetBuffer);
+    // return
+    return ctx.stub.putState(productNumber, assetBuffer);
   }
 
   // Fetch an Asset
