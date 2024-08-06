@@ -48,7 +48,7 @@ invokeMakeProduct() {
     setGlobalVarsForOrg1
     res=$?
     set -x
-    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CHAINCODE_NAME} -c '{"function":"addProductDataOnChain","Args":["'C-001'","'INTEL'","'intel-i5'", "'Alan'"]}' >&./logs/invoke_CC_log.txt
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CHAINCODE_NAME} -c '{"function":"addProductData","Args":["'C-001'","'INTEL'","'intel-i5'", "'Alan'"]}' >&./logs/invoke_CC_log.txt
     res=$?
     set +x
     cat ./logs/invoke_CC_log.txt

@@ -7,6 +7,7 @@ CHANNEL_NAME="$1"
 : ${CHANNEL_NAME:="samplechannel"}
 
 MAX_RETRY="3"
+VERBOSE="false"
 
 echo
 echo " ____    _____      _      ____    _____ "
