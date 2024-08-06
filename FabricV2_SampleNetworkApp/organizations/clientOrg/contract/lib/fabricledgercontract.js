@@ -95,10 +95,11 @@ class FabricLedgerContract extends Contract {
     const timestamp = new Date().toISOString();
     assetJSON.productOwnerName = newOwnerName;
     assetJSON.updatedAt = timestamp;
-    return ctx.stub.putState(
-      productNumber,
-      Buffer.from(JSON.stringify(assetJSON))
-    );
+    // create Buffer
+    const assetBuffer = Buffer.from(JSON.stringify(assetJSON));
+    // add event
+    ctx.stub.setEvent("updateProductEvent", assetBuffer);
+    return ctx.stub.putState(productNumber, assetBuffer);
   }
 
   // Delete an asset
