@@ -7,11 +7,7 @@
 
 "use strict";
 // Fabric smart contract handler class
-const { Contract, Context } = require("fabric-contract-api");
-// to enable client logging
-const { Utils: utils } = require("fabric-common");
-
-const logger = utils.getLogger("SmartContract");
+const { Contract } = require("fabric-contract-api");
 
 /**
  *
@@ -20,7 +16,7 @@ const logger = utils.getLogger("SmartContract");
  */
 class FabricLedgerContract extends Contract {
   async InitLedger(ctx) {
-    logger.info("--- Ledger initialized ---");
+    console.info("--- Ledger initialized ---");
   }
 
   // Check if asset exist with given ID - return true(boolean) if exists
@@ -40,14 +36,14 @@ class FabricLedgerContract extends Contract {
    */
 
   // Create An Asset
-  async addProductDataOnChain(
+  async addProductData(
     ctx,
     productNumber,
     productManufacturer,
     productName,
     productOwnerName
   ) {
-    logger.info("============= START : addProductData =============");
+    console.info("============= START : addProductData =============");
     // check if asset already exist
     const exists = await this.assetExists(ctx, productNumber);
     if (exists) {
@@ -70,7 +66,7 @@ class FabricLedgerContract extends Contract {
 
   // Fetch an Asset
   async getProductData(ctx, productNumber) {
-    logger.info(
+    console.info(
       "============= START: Get ProductData by productNumber ============="
     );
     // fetching data from global state
@@ -84,7 +80,7 @@ class FabricLedgerContract extends Contract {
 
   // Asset Transfer Scenario (Update Asset)
   async updateProductOwner(ctx, productNumber, oldOwnerName, newOwnerName) {
-    logger.info("============= START: update Product's Owner =============");
+    console.info("============= START: update Product's Owner =============");
     // calling getProductData to fetch the asset
     const assetString = await this.getProductData(ctx, productNumber);
     const assetJSON = JSON.parse(assetString);
@@ -104,7 +100,7 @@ class FabricLedgerContract extends Contract {
 
   // Delete an asset
   async deleteProduct(ctx, productNumber) {
-    logger.info("============= START: Delete Product Asset =============");
+    console.info("============= START: Delete Product Asset =============");
     // check if asset exist or not
     const exists = await this.assetExists(ctx, productNumber);
     if (!exists) {
@@ -115,7 +111,7 @@ class FabricLedgerContract extends Contract {
 
   // Fetch an asset by Rich-Query (only supported in couchDB)
   async queryProductData(ctx, selectorQueryString) {
-    logger.info(
+    console.info(
       "============= START: Performing Query on Product Asset ============="
     );
 
@@ -129,7 +125,7 @@ class FabricLedgerContract extends Contract {
     const query = {
       selector: selectorQuery,
     };
-    logger.info(`Query: ${query}`);
+    console.info(`**-- Query: ${query} --**`);
 
     // getQueryResult() returns 'StateQueryIterator' object
     const iterator = await ctx.stub.getQueryResult(JSON.stringify(query));
@@ -138,20 +134,20 @@ class FabricLedgerContract extends Contract {
       const res = await iterator.next();
 
       if (res.value && res.value.value.toString()) {
-        logger.info(res.value.value.toString("utf8"));
+        console.info(res.value.value.toString("utf8"));
 
         const Key = res.value.key;
         let Record;
         try {
           Record = JSON.parse(res.value.value.toString("utf8"));
         } catch (error) {
-          logger.error(error);
+          console.error(`-- Error - ${error} --`);
           Record = res.value.value.toString("utf8");
         }
         allResults.push({ Key, Record });
       }
       if (res.done) {
-        logger.info("End of QueryResult data");
+        console.info("-- End of QueryResult data --");
         await iterator.close();
         return JSON.stringify(allResults);
       }

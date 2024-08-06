@@ -36,7 +36,7 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log("-- Initiating Transaction.. --");
 
     // create a transaction
-    const transaction = contract.createTransaction("addProductDataOnChain");
+    const transaction = contract.createTransaction("addProductData");
     // get transaction Id
     const txnId = transaction.getTransactionId();
     console.log(`Txn Id - ${txnId}`);
