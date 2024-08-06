@@ -7,6 +7,7 @@ VERSION="$2"
 : ${VERSION:="1"}
 
 MAX_RETRY="3"
+VERBOSE="false"
 
 CC_SRC_LANGUAGE="javascript"
 CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
