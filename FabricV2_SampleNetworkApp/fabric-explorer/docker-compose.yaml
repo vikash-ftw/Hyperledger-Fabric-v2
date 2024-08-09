@@ -45,7 +45,7 @@ services:
     volumes:
       - ./config.json:/opt/explorer/app/platform/fabric/config.json
       - ./connection-profile:/opt/explorer/app/platform/fabric/connection-profile
-      - ./organizations:/tmp/crypto
+      - ../organizations:/tmp/crypto
       - walletstore:/opt/explorer/wallet
     ports:
       - ${PORT:-8080}:${PORT:-8080}
