@@ -67,9 +67,7 @@
 
 ### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
 
-1. Copy the **orderersOrganizations** and **peerOrganizations** from your already running fabric network's **organizations** directory into **./fabric-explorer/organizations** directory.
-
-> :memo: **Note:** From now on 'fabric-explorer' directory will be for all the below mentioned changes.
+> :memo: **Note:** From now on 'fabric-explorer' directory under 'FabricV2_SampleNetworkApp' directory will be home for all the below mentioned changes.
 
 2. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
 
