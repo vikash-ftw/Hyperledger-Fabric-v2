@@ -31,7 +31,12 @@
       "adminPrivateKey": {
         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk"
       },
-      "peers": ["peer0.org1.example.com"],
+      "peers": [
+        "peer0.org1.example.com",
+        "peer1.org1.example.com",
+        "peer2.org1.example.com",
+        "peer3.org1.example.com"
+      ],
       "signedCert": {
         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
       }
@@ -43,6 +48,24 @@
         "path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
       },
       "url": "grpcs://peer0.org1.example.com:7051"
+    },
+    "peer1.org1.example.com": {
+      "tlsCACerts": {
+        "path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt"
+      },
+      "url": "grpcs://peer1.org1.example.com:8051"
+    },
+    "peer2.org1.example.com": {
+      "tlsCACerts": {
+        "path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/ca.crt"
+      },
+      "url": "grpcs://peer2.org1.example.com:5051"
+    },
+    "peer3.org1.example.com": {
+      "tlsCACerts": {
+        "path": "/tmp/crypto/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/ca.crt"
+      },
+      "url": "grpcs://peer3.org1.example.com:6051"
     }
   }
 }
