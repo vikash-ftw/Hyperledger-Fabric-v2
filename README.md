@@ -76,16 +76,25 @@
 3. Now edit **.connection-profile/test-network.json** file and make changes ->
 
    - change "name" key to your running fabric network's name.
-   - go to "organizations" key and change the priv_sk to private key in exist in your copied peerOrganizations folder.
+   - go to "organizations": "Org1MSP": "adminPrivateKey": "path" key and change the priv_sk to private key in exist in your peerOrganizations folder.
 
    ```
    "organizations": {
       "Org1MSP": {
          "mspid": "Org1MSP",
          "adminPrivateKey": {
+         ###
+         example -
+         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/f4f057d9967bdb39ee081423eu57h83f4423d67b85326254dbb059107763bb3b_sk"
+         ###
          "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/<privateKey-filename>_sk"
          },
-         "peers": ["peer0.org1.example.com"],
+         "peers": [
+            "peer0.org1.example.com",
+            "peer1.org1.example.com",
+            "peer2.org1.example.com",
+            "peer3.org1.example.com"
+         ],
          "signedCert": {
          "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
          }
@@ -93,7 +102,11 @@
    },
    ```
 
-   **Here in the "adminPrivateKey" key 'path' key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' dir (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing '<privateKey-filename>' under 'adminPrivateKey')**
+   - **Here in the "organizations": "Org1MSP": "adminPrivateKey": "path" key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' dir (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing 'privateKey-filename' under "organizations": "Org1MSP": "adminPrivateKey": "path" key)**
+
+   - **An example case is there defined above under '### example - ###'**
+
+   - **Make sure the key path should start with '/tmp/crypto/' as mentioned in example**
 
 4. Same fabric network name to be mentioned in **config.json** file under 'network-configs' key attribute.
 
