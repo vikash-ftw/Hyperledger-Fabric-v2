@@ -6,8 +6,7 @@
 CHANNEL_NAME="$1"
 : ${CHANNEL_NAME:="samplechannel"}
 
-DELAY="3"
-MAX_RETRY="2"
+MAX_RETRY="3"
 VERBOSE="false"
 
 echo
@@ -70,7 +69,7 @@ createChannelTxn() {
 	configtxgen -profile SampleChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
 	res=$?
 	set +x
-  	verifyResult $res "txn generated for $CHANNEL_NAME" "error in $CHANNEL_NAME txn generation!"
+  	verifyResult $res "txn file generated for $CHANNEL_NAME" "Failed in generating $CHANNEL_NAME txn file!"
 }
 
 createAncorPeerTxn() {
@@ -82,7 +81,7 @@ createAncorPeerTxn() {
 		configtxgen -profile SampleChannel -outputAnchorPeersUpdate ./channel-artifacts/${orgmsp}anchors.tx -channelID $CHANNEL_NAME -asOrg ${orgmsp}
 		res=$?
 		set +x
-		verifyResult $res "peer0 anchorTxn generated for ${orgmsp}" "error in generate anchor peer update transaction for ${orgmsp} failed"
+		verifyResult $res "peer0 -> anchorTxn file generated for ${orgmsp}" "Failed in generating peer0 anchorTxn file for ${orgmsp}!"
 	done
 }
 
@@ -96,18 +95,23 @@ createChannel() {
     export CORE_PEER_ADDRESS=localhost:7051
 
 	local rc=1
-	local COUNTER=1
+	local COUNTER=0
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 		sleep 1
+		if [ $COUNTER -gt 0 ]; then
+			echo "Command Failed - Retrying ..."
+			echo "-- Retry Attempt $COUNTER --"
+			sleep 2
+		fi
 		set -x
 		peer channel create -o localhost:7050 -c $CHANNEL_NAME --ordererTLSHostnameOverride orderer.example.com -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&./logs/create-channel-log.txt
 		res=$?
 		set +x
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+		rc=$res 	
+		COUNTER=$((COUNTER + 1))
+		cat ./logs/create-channel-log.txt
 	done
-	cat ./logs/create-channel-log.txt
-	verifyResult $res "Channel ${CHANNEL_NAME} created successfully" "error in creating channel - ${CHANNEL_NAME}"
+	verifyResult $res "Channel -> ${CHANNEL_NAME} created successfully" "Failed in creating channel - ${CHANNEL_NAME}!"
 }
 
 # Org and its peer join channel
@@ -138,18 +142,23 @@ joinChannel() {
 				# join peer to channel
 				echo "-- InProcess Joining of peer${i} of ${org} to channel - ${CHANNEL_NAME} --"
 				local rc=1
-				local COUNTER=1
+				local COUNTER=0
 				while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 					sleep 1
+					if [ $COUNTER -gt 0 ]; then
+						echo "Command Failed - Retrying ..."
+						echo "-- Retry Attempt $COUNTER --"
+						sleep 2
+					fi
 					set -x
 					peer channel join -b ./channel-artifacts/$CHANNEL_NAME.block >&./logs/peer-channel-join-log.txt
 					res=$?
 					set +x
-					let rc=$res
-					COUNTER=$(expr $COUNTER + 1)
+					rc=$res
+					COUNTER=$((COUNTER + 1))
+					cat ./logs/peer-channel-join-log.txt
 				done
-				cat ./logs/peer-channel-join-log.txt
-				verifyResult $res "peer${i} joined channel - ${CHANNEL_NAME}" "peer${i} failed to join channel - ${CHANNEL_NAME}"
+				verifyResult $res "peer${i} joined channel - ${CHANNEL_NAME}" "peer${i} Failed to join channel - ${CHANNEL_NAME}!"
 				sleep 1
 			done
 		else
@@ -164,18 +173,23 @@ updateAnchorPeers() {
 	# for Org1 setting MSPID
 	export CORE_PEER_LOCALMSPID="Org1MSP"
 	local rc=1
-	local COUNTER=1
+	local COUNTER=0
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 		sleep 1
+		if [ $COUNTER -gt 0 ]; then
+			echo "Command Failed - Retrying ..."
+			echo "-- Retry Attempt $COUNTER --"
+			sleep 2
+		fi
 		set -x
 		peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&./logs/anchorPeer-channel-log.txt
 		res=$?
 		set +x
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+		rc=$res
+		COUNTER=$((COUNTER + 1))
+		cat ./logs/anchorPeer-channel-log.txt
 	done
-	cat ./logs/anchorPeer-channel-log.txt
-	verifyResult $res "Anchor peer defined for channel - ${CHANNEL_NAME}" "Anchor peer in channel - ${CHANNEL_NAME} failed"
+	verifyResult $res "Anchor peer defined for channel - ${CHANNEL_NAME}" "Failed to update Anchor peer in channel - ${CHANNEL_NAME}!"
 }
 
 export FABRIC_CFG_PATH=${PWD}/configtx
@@ -202,7 +216,7 @@ echo "Updating anchor peers for org..."
 updateAnchorPeers
 
 echo
-echo "========= Fabric Network Channel $CHANNEL_NAME successfully joined =========== "
+echo "========= Fabric Network Channel $CHANNEL_NAME successfully created =========== "
 
 echo
 echo " _____   _   _   ____   "
