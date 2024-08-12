@@ -39,7 +39,7 @@ const addProduct = asyncHandler(async (req, res) => {
     const contract = network.getContract(chaincodeName);
     console.log("-- Initiating Transaction... --");
     // create a proposal
-    const proposal = contract.newProposal("addProductDataOnChain", {
+    const proposal = contract.newProposal("addProductData", {
       arguments: [
         productNumber,
         productManufacturer,
