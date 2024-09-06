@@ -7,13 +7,14 @@ version: "2"
 
 # to persist data to Docker managed volumes
 # commented As direct host path are mapped instead of defined volumes
-# volumes:
-#   orderer.example.com:
-#   orderer2.example.com:
-#   peer0.org1.example.com:
-#   peer1.org1.example.com:
-#   peer2.org1.example.com:
-#   peer3.org1.example.com:
+volumes:
+  # orderer.example.com:
+  # orderer2.example.com:
+  # peer0.org1.example.com:
+  # peer1.org1.example.com:
+  # peer2.org1.example.com:
+  # peer3.org1.example.com:
+  portainer_data:
 networks:
   fbn:
 
@@ -226,5 +227,18 @@ services:
     command: peer node start
     ports:
       - 6051:6051
+    networks:
+      - fbn
+
+  # Portainer service
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9000:9000
     networks:
       - fbn
