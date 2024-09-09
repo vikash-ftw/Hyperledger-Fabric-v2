@@ -4,12 +4,6 @@ NEW_BATCH_TIMEOUT=${2:-"2s"}
 
 echo "--- BATCH TIMEOUT CONFIG SCRIPT ---"
 
-# ORDERER_CA=${PWD}/../organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem
-# CORE_PEER_MSPCONFIGPATH=${PWD}/../organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-# CORE_PEER_ADDRESS=localhost:7051
-# CORE_PEER_TLS_ROOTCERT_FILE=${PWD}/../organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-# CORE_PEER_LOCALMSPID=Org1MSP
-
 ## setOrgEnv logic - by Vikash Batham
 # Adding fabric bin to path
 export PATH=${PWD}/../bin:$PATH
