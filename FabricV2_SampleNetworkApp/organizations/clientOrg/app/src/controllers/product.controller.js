@@ -7,7 +7,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { TextDecoder } from "util";
 
-const utf8Decoder = new TextDecoder();
+const utf8Decoder = new TextDecoder('utf-8');
 
 const addProduct = asyncHandler(async (req, res) => {
   console.log("--- Controller: addProduct called ---");
@@ -65,6 +65,7 @@ const addProduct = asyncHandler(async (req, res) => {
       throw new ApiError(400, "Transaction Failed!");
     }
     console.log("--- Transaction Commited ---");
+    console.log(`Buffer Resp - ${utf8Decoder.decode(submittedTransaction.getResult())}`);
     res
       .status(201)
       .json(new ApiResponse(201, {}, "Product Added Successfully"));

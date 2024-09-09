@@ -59,10 +59,16 @@ class FabricLedgerContract extends Contract {
       updatedAt: timestamp,
     };
 
+    // JSON obj stringify
+    const assetJSON = JSON.stringify(product);
+    console.info(`--- asset : ${assetJSON} ---`);
+
     // create Buffer
-    const assetBuffer = Buffer.from(JSON.stringify(product));
-    // return
-    return ctx.stub.putState(productNumber, assetBuffer);
+    const assetBuffer = Buffer.from(assetJSON);
+    // perform txn
+    await ctx.stub.putState(productNumber, assetBuffer);
+    console.info("-- Performed Context Txn --");
+    return assetJSON;
   }
 
   // Fetch an Asset
