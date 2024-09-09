@@ -45,8 +45,8 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
-    // fetching endorsing peers - (fetching only first 2 endorsing peers)
-    const peers = network.getChannel().getEndorsers(orgMSP).slice(0, 2);
+    // fetching endorsing peers
+    const peers = network.getChannel().getEndorsers(orgMSP);
     console.log(`Endorsing Peers : ${peers}`);
 
     // set commit listener
@@ -59,8 +59,8 @@ const addProduct = asyncHandler(async (req, res) => {
     const txnId = transaction.getTransactionId();
     console.log(`Txn Id - ${txnId}`);
 
-    // attach commitListener
-    await network.addCommitListener(listener, peers, txnId);
+    // attach commitListener - (listening on first 2 endorsing peers)
+    await network.addCommitListener(listener, peers.slice(0, 2), txnId);
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(
