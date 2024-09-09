@@ -128,9 +128,11 @@
 
 5. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-6. After all these changes : Run _docker-compose up -d_ from './fabric-explorer' dir => To start the explorer containers.
+6. Now go to the scripts directory in 'Project Home'.
 
-   - To stop or down (to remove) container then run same docker-compose command with stop or down command.
+   - To start explorer then run _./scripts/start_explorer.sh_
+   - To stop explorer then run _./scripts/stop_explorer.sh_
+   - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
 7. Now open the explorer dashboard in browser on _port - 8080_.
 
