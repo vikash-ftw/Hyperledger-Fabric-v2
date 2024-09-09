@@ -1,5 +1,9 @@
 ## ---- Steps to run Fabric V2 network ----
 
+- Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
+
+- Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+
 ### **-- Fresh Setup on New Machine --**
 
 - Check or Download the dependencies from here -> [Check_Dependencies_Doc](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
@@ -59,9 +63,6 @@
 
     - Run _npm install_ (Node version must be v20.14)
     - Now Run _npm run start_ (start our node server)
-    - If all goes well without any error while server start then check out -
-    - Check out './organizations/clientOrg/app/identity' folder container waller identities for admin and user
-    - Newly created user identity using fabric CA will be used to invoke chaincode on our network.
 
 13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server
 
@@ -128,9 +129,11 @@
 
 5. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-6. After all these changes : Run _docker-compose up -d_ from './fabric-explorer' dir => To start the explorer containers.
+6. Now go to the scripts directory in 'Project Home'.
 
-   - To stop or down (to remove) container then run same docker-compose command with stop or down command.
+   - To start explorer then run _./scripts/start_explorer.sh_
+   - To stop explorer then run _./scripts/stop_explorer.sh_
+   - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
 7. Now open the explorer dashboard in browser on _port - 8080_.
 
