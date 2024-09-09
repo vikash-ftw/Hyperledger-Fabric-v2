@@ -1,5 +1,9 @@
 ## ---- Steps to run Fabric V2 network ----
 
+- Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
+
+- Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+
 ### **-- Fresh Setup on New Machine --**
 
 - Check or Download the dependencies from here -> [Check_Dependencies_Doc](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
