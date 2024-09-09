@@ -71,7 +71,7 @@ const addProduct = asyncHandler(async (req, res) => {
     );
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
-    console.log("Buffer Resp - ", bufferResp.toString());
+    console.log(`Buffer Resp - ${bufferResp.toString()}`);
     res
       .status(200)
       .json(new ApiResponse(200, {}, "Product Added Successfully"));
