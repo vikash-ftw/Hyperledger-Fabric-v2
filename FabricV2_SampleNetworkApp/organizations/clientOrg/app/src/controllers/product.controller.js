@@ -326,6 +326,58 @@ const queryOnProductName = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to fetch history for a UUID key
+const getTransactionHistory = asyncHandler(async (req, res) => {
+  console.info(
+    `${BLUE}--- Controller: getTransactionHistory called ---${RESET}`
+  );
+  console.log(`*** Local Timestamp - ${new Date().toLocaleString()} ***`);
+  const { txnId } = req.body;
+
+  if (!txnId) {
+    console.error(
+      `${RED} Error in Controller - Invalid request parameter!${RESET}`
+    );
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+  if (txnId?.trim() === "") {
+    console.error(
+      `${RED} Error in Controller - Invalid request parameter!${RESET}`
+    );
+    throw new ApiError(400, "Empty Value in request parameters!");
+  }
+
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  try {
+    const instance = await initiateGRPC_Connection();
+    console.info(`-- Fetching Channel - ${channelName} --`);
+    const network = instance.getNetwork(channelName);
+    console.info(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    console.info(`Data Fetch Payload - ${txnId}`);
+    const result = await contract.evaluateTransaction(
+      "getHistoryForKey",
+      txnId
+    );
+    console.log(`-- Fetch Completed --`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          JSON.parse(result),
+          "Transaction History Fetched Successfully"
+        )
+      );
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(500, `Chaincode Error: ${error.message}`);
+  }
+});
+
 // To extract error message from chaincode error stack and simplify error message for logging
 function extractMessage(errorString) {
   const messageKey = "message=";
@@ -351,4 +403,5 @@ export {
   updateProductOwner,
   queryOnProductOwner,
   queryOnProductName,
+  getTransactionHistory,
 };

@@ -8,6 +8,7 @@ import {
   updateProductOwner,
   queryOnProductOwner,
   queryOnProductName,
+  getTransactionHistory,
 } from "../controllers/product.controller.js";
 
 const router = Router();
@@ -24,5 +25,7 @@ router
 router.route("/queryByProductOwner").post(queryOnProductOwner);
 
 router.route("/queryByProductName").post(queryOnProductName);
+
+router.route("/getTxnHistory").post(getTransactionHistory);
 
 export default router;
