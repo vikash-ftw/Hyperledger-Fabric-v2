@@ -407,6 +407,71 @@ const queryOnProductName = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to check the history for a key
+const getTransactionHistory = asyncHandler(async (req, res) => {
+  console.log("--- Controller: getTransactionHistory called ---");
+  const { txnId } = req.body;
+  
+  if (!txnId) {
+    console.error(
+      `Error in Controller - Invalid request parameter!`
+    );
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+  if (txnId?.trim() === "") {
+    console.error(
+      `Error in Controller - Invalid request parameter!`
+    );
+    throw new ApiError(400, "Empty Value in request parameters!");
+  }
+
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  try {
+    const instance = await initiateGRPC_Connection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    const network = instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    // payload
+    console.log(`Data Fetch Payload - ${txnId}`);
+    const result = await contract.evaluateTransaction(
+      "getHistoryForKey",
+      txnId
+    );
+    const resultJson = utf8Decoder.decode(result);
+    console.log(`-- Fetch Completed --`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          JSON.parse(resultJson),
+          "Transaction History Fetched Successfully"
+        )
+      );
+  } catch (error) {
+    let errorMessage;
+    if (error instanceof CommitError) {
+      console.log("Chaincode Error: CommitError statusCode- ", error.code);
+      throw new ApiError(
+        500,
+        `Chaincode Error of type CommitError with statusCode - ${error.code}`
+      );
+    }
+    if (error instanceof GatewayError) {
+      console.log("Chaincode Error: GatewayError statusCode- ", error.code);
+      console.log("Error details address: ", error.details[0].address);
+      console.log("Error details message: ", error.details[0].message);
+      errorMessage = error.details[0].message;
+      throw new ApiError(500, errorMessage);
+    }
+    throw new ApiError(500, error.message);
+  }
+});
+
 export {
   addProduct,
   getProductById,
@@ -414,4 +479,5 @@ export {
   updateProductOwner,
   queryOnProductOwner,
   queryOnProductName,
+  getTransactionHistory
 };

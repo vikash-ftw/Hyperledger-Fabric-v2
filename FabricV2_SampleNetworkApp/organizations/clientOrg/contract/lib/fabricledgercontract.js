@@ -159,6 +159,37 @@ class FabricLedgerContract extends Contract {
       }
     }
   }
+
+  // Fetch the history for key
+  async getHistoryForKey(ctx, key) {
+    console.info("============= START: getHistoryForKey =============");
+    console.info(`-- Key : ${key} --`);
+    // call getHistoryForKey API method - returns iterator
+    const iterator = await ctx.stub.getHistoryForKey(key);
+    const allResults = [];
+    while (true) {
+      const res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        console.info(res.value.value.toString("utf8"));
+
+        const Key = res.value.key;
+        let Record;
+        try {
+          Record = JSON.parse(res.value.value.toString("utf8"));
+        } catch (error) {
+          console.error(`-- Error - ${error} --`);
+          Record = res.value.value.toString("utf8");
+        }
+        allResults.push({ Key, Record });
+      }
+      if (res.done) {
+        console.info("-- End of QueryResult data --");
+        await iterator.close();
+        return JSON.stringify(allResults);
+      }
+    }
+  }
 }
 
 module.exports = FabricLedgerContract;
