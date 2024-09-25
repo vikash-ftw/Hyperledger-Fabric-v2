@@ -56,4 +56,26 @@ import productRouter from "./routes/product.routes.js";
 
 app.use("/products", productRouter);
 
+// middleware to handle errors
+import { ApiError } from "./utils/ApiError.js";
+app.use((err, req, res, next) => {
+  console.log(`--- In Error Handling Middleware ---`);
+  // Check if it's your custom error
+  console.error(err);
+  if (err instanceof ApiError) {
+    console.info("** ApiError Class error **");
+    res.status(err.statusCode).json({
+      success: err.success,
+      message: err.message,
+    });
+  } else {
+    // Handle other errors (e.g., server errors)
+    logger.info("** Critical Unknown Error **");
+    res.status(500).json({
+      success: false,
+      message: `Critical Error: ${err.message}`,
+    });
+  }
+});
+
 startServer();
