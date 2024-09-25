@@ -65,6 +65,7 @@ app.use((err, req, res, next) => {
   if (err instanceof ApiError) {
     console.info("** ApiError Class error **");
     res.status(err.statusCode).json({
+      statusCode: err.statusCode,
       success: err.success,
       message: err.message,
     });
@@ -72,6 +73,7 @@ app.use((err, req, res, next) => {
     // Handle other errors (e.g., server errors)
     logger.info("** Critical Unknown Error **");
     res.status(500).json({
+      statusCode: 500,
       success: false,
       message: `Critical Error: ${err.message}`,
     });
