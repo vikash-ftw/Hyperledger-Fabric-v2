@@ -115,6 +115,8 @@ class FabricLedgerContract extends Contract {
     if (!exists) {
       throw new Error(`The product with id - ${productNumber} does not exist!`);
     }
+    // add event
+    ctx.stub.setEvent("deleteProductEvent", Buffer.from(productNumber));
     return ctx.stub.deleteState(productNumber);
   }
 

@@ -134,15 +134,28 @@ const deleteProductById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid request parameters!");
   }
 
+  const orgMSP = process.env.Org1MSP;
   const channelName = process.env.CHANNEL_NAME;
   const chaincodeName = process.env.CHAINCODE_NAME;
+
+  // variables declaration
+  let network;
+  let listener;
 
   try {
     const instance = await initiateConnection();
     console.log(`-- Fetching Channel - ${channelName} --`);
-    const network = await instance.getNetwork(channelName);
+    network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
+
+    // fetching endorsing peers - (fetching only first 2 endorsing peers)
+    const peers = network.getChannel().getEndorsers(orgMSP);
+    console.log(`Endorsing Peers : ${peers}`);
+
+    // set commit listener
+    listener = commitListener;
+
     console.log("-- Initiating Transaction.. --");
 
     // create a transaction
@@ -150,8 +163,13 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // get transaction Id
     const DLT_txnId = transaction.getTransactionId();
     console.log(`DLT Txn Id - ${DLT_txnId}`);
+
+    // attach commitListener
+    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
+
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
+
     console.log("** Transaction Committed **");
     console.log("Buffer Resp - ", bufferResp);
     console.log("**** Product Deleted ****");
@@ -204,7 +222,7 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     const contract = network.getContract(chaincodeName);
 
     // fetching endorsing peers - (fetching only first 2 endorsing peers)
-    const peers = network.getChannel().getEndorsers(orgMSP).slice(0, 2);
+    const peers = network.getChannel().getEndorsers(orgMSP);
     console.log(`Endorsing Peers : ${peers}`);
 
     // set commit listener
@@ -219,7 +237,7 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
     // attach commitListener
-    await network.addCommitListener(listener, peers, DLT_txnId);
+    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(
