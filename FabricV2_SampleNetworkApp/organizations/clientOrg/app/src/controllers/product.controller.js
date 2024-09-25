@@ -28,7 +28,7 @@ const addProduct = asyncHandler(async (req, res) => {
       (field) => field?.trim() === ""
     )
   ) {
-    throw new ApiError(400, "Some empty spaces in request parameters!");
+    throw new ApiError(400, "Invalid value in request parameters!");
   }
 
   const orgMSP = process.env.Org1MSP;
@@ -56,11 +56,11 @@ const addProduct = asyncHandler(async (req, res) => {
     // create a transaction
     const transaction = contract.createTransaction("addProductData");
     // get transaction Id
-    const txnId = transaction.getTransactionId();
-    console.log(`Txn Id - ${txnId}`);
+    const DLT_txnId = transaction.getTransactionId();
+    console.log(`DLT Txn Id - ${DLT_txnId}`);
 
     // attach commitListener - (listening on first 2 endorsing peers)
-    await network.addCommitListener(listener, peers.slice(0, 2), txnId);
+    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(
@@ -74,7 +74,13 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log(`Buffer Resp - ${bufferResp.toString()}`);
     res
       .status(200)
-      .json(new ApiResponse(200, {}, "Product Added Successfully"));
+      .json(
+        new ApiResponse(
+          200,
+          { DLT_txnId: DLT_txnId },
+          "Product Added Successfully"
+        )
+      );
   } catch (error) {
     let errorMessage = extractMessage(error.message);
     if (errorMessage.includes("already exist!")) {
@@ -91,7 +97,7 @@ const getProductById = asyncHandler(async (req, res) => {
   console.log(`${BLUE}--- Controller: getProductById called ---${RESET}`);
   const { productNumber } = req.body;
   if (!(productNumber && productNumber?.trim() !== "")) {
-    throw new ApiError(400, "Invalid productNumber!");
+    throw new ApiError(400, "Invalid request parameters!");
   }
   const channelName = process.env.CHANNEL_NAME;
   const chaincodeName = process.env.CHAINCODE_NAME;
@@ -125,7 +131,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
   console.log(`${BLUE}--- Controller: deleteProductById called ---${RESET}`);
   const { productNumber } = req.params;
   if (!(productNumber && productNumber?.trim() !== "")) {
-    throw new ApiError(400, "Invalid productNumber!");
+    throw new ApiError(400, "Invalid request parameters!");
   }
 
   const channelName = process.env.CHANNEL_NAME;
@@ -142,8 +148,8 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // create a transaction
     const transaction = contract.createTransaction("deleteProduct");
     // get transaction Id
-    const txnId = transaction.getTransactionId();
-    console.log(`Txn Id - ${txnId}`);
+    const DLT_txnId = transaction.getTransactionId();
+    console.log(`DLT Txn Id - ${DLT_txnId}`);
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
     console.log("** Transaction Committed **");
@@ -151,7 +157,13 @@ const deleteProductById = asyncHandler(async (req, res) => {
     console.log("**** Product Deleted ****");
     res
       .status(200)
-      .json(new ApiResponse(200, {}, "Product Deleted Successfully"));
+      .json(
+        new ApiResponse(
+          200,
+          { DLT_txnId: DLT_txnId },
+          "Product Deleted Successfully"
+        )
+      );
   } catch (error) {
     let errorMessage = extractMessage(error.message);
     if (errorMessage?.includes("does not exist!")) {
@@ -173,7 +185,7 @@ const updateProductOwner = asyncHandler(async (req, res) => {
       (field) => field?.trim() === ""
     )
   ) {
-    throw new ApiError(400, "Invalid empty spaces in req parameters!");
+    throw new ApiError(400, "Invalid value in request parameters!");
   }
 
   const orgMSP = process.env.Org1MSP;
@@ -203,11 +215,11 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     // create a transaction
     const transaction = contract.createTransaction("updateProductOwner");
     // get transaction Id
-    const txnId = transaction.getTransactionId();
-    console.log(`Txn Id - ${txnId}`);
+    const DLT_txnId = transaction.getTransactionId();
+    console.log(`DLT Txn Id - ${DLT_txnId}`);
 
     // attach commitListener
-    await network.addCommitListener(listener, peers, txnId);
+    await network.addCommitListener(listener, peers, DLT_txnId);
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(
@@ -220,7 +232,13 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     console.log("**** Product Asset Updated ****");
     res
       .status(200)
-      .json(new ApiResponse(200, {}, "Product's Owner Updated Successfully"));
+      .json(
+        new ApiResponse(
+          200,
+          { DLT_txnId: DLT_txnId },
+          "Product's Owner Updated Successfully"
+        )
+      );
   } catch (error) {
     const errorMessage = extractMessage(error.message);
     if (
@@ -241,7 +259,7 @@ const queryOnProductOwner = asyncHandler(async (req, res) => {
   console.log(`${BLUE}--- Controller: queryOnProductOwner called ---${RESET}`);
   const { productOwnerName } = req.body;
   if (!(productOwnerName && productOwnerName?.trim() != "")) {
-    throw new ApiError(400, "Invalid request parameter!");
+    throw new ApiError(400, "Invalid request parameters!");
   }
 
   // creating the selectorQueryString object required by chaincode
@@ -286,7 +304,7 @@ const queryOnProductName = asyncHandler(async (req, res) => {
   console.log(`${BLUE}--- Controller: queryOnProductName called ---${RESET}`);
   const { productName } = req.body;
   if (!(productName && productName?.trim() != "")) {
-    throw new ApiError(400, "Invalid request parameter!");
+    throw new ApiError(400, "Invalid request parameters!");
   }
 
   // creating the selectorQueryString object required by chaincode
@@ -341,9 +359,9 @@ const getTransactionHistory = asyncHandler(async (req, res) => {
   }
   if ([txnId, channelName].some((field) => field?.trim() === "")) {
     console.error(
-      `${RED} Error in Controller - Empty Value in request parameters!${RESET}`
+      `${RED} Error in Controller - Invalid value in request parameters!${RESET}`
     );
-    throw new ApiError(400, "Empty Value in request parameters!");
+    throw new ApiError(400, "Invalid value in request parameters!");
   }
 
   const chaincodeName = process.env.CHAINCODE_NAME;
