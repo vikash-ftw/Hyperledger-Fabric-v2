@@ -331,30 +331,28 @@ const getTransactionHistory = asyncHandler(async (req, res) => {
   console.info(
     `${BLUE}--- Controller: getTransactionHistory called ---${RESET}`
   );
-  console.log(`*** Local Timestamp - ${new Date().toLocaleString()} ***`);
-  const { txnId } = req.body;
+  const { txnId, channelName } = req.body;
 
-  if (!txnId) {
+  if (!(txnId && channelName)) {
     console.error(
-      `${RED} Error in Controller - Invalid request parameter!${RESET}`
+      `${RED} Error in Controller - Invalid request parameters!${RESET}`
     );
     throw new ApiError(400, "Invalid request parameters!");
   }
-  if (txnId?.trim() === "") {
+  if ([txnId, channelName].some((field) => field?.trim() === "")) {
     console.error(
-      `${RED} Error in Controller - Invalid request parameter!${RESET}`
+      `${RED} Error in Controller - Empty Value in request parameters!${RESET}`
     );
     throw new ApiError(400, "Empty Value in request parameters!");
   }
 
-  const channelName = process.env.CHANNEL_NAME;
   const chaincodeName = process.env.CHAINCODE_NAME;
 
   try {
-    const instance = await initiateGRPC_Connection();
-    console.info(`-- Fetching Channel - ${channelName} --`);
-    const network = instance.getNetwork(channelName);
-    console.info(`-- Fetching Contract - ${chaincodeName} --`);
+    const instance = await initiateConnection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    const network = await instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
     console.info(`Data Fetch Payload - ${txnId}`);
