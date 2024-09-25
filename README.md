@@ -1,12 +1,14 @@
-## ---- Steps to run Fabric V2 network ----
+## ---- Hyperledger Fabric 2.x version ----
 
 - Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
 
 - Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
 
+## ---- Steps to run Fabric V2 network ----
+
 ### **-- Fresh Setup on New Machine --**
 
-- Check or Download the dependencies from here -> [Check_Dependencies_Doc](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
+- Download or check the required dependencies from here -> [Dependencies](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
 
 1. Make sure to remove files if any present under /var/hyperledger/ directory of your system.
 
@@ -153,3 +155,11 @@
 
      - So delete these two volumes by running 'docker volume rm' command available in docker.
      - Now recreate the explorer container as mentioned in step - 6.
+
+## ---- Help Material ----
+
+[Help](https://docs.google.com/document/d/1HPvIubGyVd9m5q4U-rwNbLDViEF10bpJAmBN9pycTvY/edit?usp=sharing)
+
+Please Star ⭐ This Repository
+
+Thank you so much!
