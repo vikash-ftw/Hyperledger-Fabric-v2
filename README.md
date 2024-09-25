@@ -1,8 +1,12 @@
-## ---- Hyperledger Fabric 2.x version ----
+## ---- Hyperledger Fabric 2.x versions list ----
 
 - Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
 
 - Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+
+## ---- Fabric Architecture Overview ----
+
+![architecture](https://private-user-images.githubusercontent.com/31383789/370818760-d5d71e21-1127-4209-ab87-ffd4cf31da79.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MjcyODQ0ODcsIm5iZiI6MTcyNzI4NDE4NywicGF0aCI6Ii8zMTM4Mzc4OS8zNzA4MTg3NjAtZDVkNzFlMjEtMTEyNy00MjA5LWFiODctZmZkNGNmMzFkYTc5LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDA5MjUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQwOTI1VDE3MDk0N1omWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTg2OWZjM2M5NjU1ZWQyYTQ3ZDJhMGUyYTRlOWJlOGNmN2U5NTVhOWFlOThlZDY1ZWIxMGRhYTU1OTZkMTQ3NjQmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.lTI50O-HaLKWI9fO9MET2OV9iXwdOQ--cOY1ImyisN0)
 
 ## ---- Steps to run Fabric V2 network ----
 
