@@ -6,7 +6,7 @@
 
 ## ---- Fabric Architecture Overview ----
 
-![architecture](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/issues/1)
+[Architecture](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/issues/1)
 
 ## ---- Steps to run Fabric V2 network ----
 
