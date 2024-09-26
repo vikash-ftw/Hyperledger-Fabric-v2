@@ -14,13 +14,13 @@
 
 - Download or check the required dependencies from here -> [Dependencies](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
 
-1. Make sure to remove files if any present under /var/hyperledger/ directory of your system.
+1. Make sure to remove 'hyperledger' directory (if present) under '/var' directory on your system.
 
 2. Run _./loadFabricDependencies.sh_ -> to install all fabric binaries of specific version in your cloned project repo.
 
-   - Check new folders created by running above script - bin, config and fabric-samples dir created.
+   - Check new folders created by above script -> bin, config and fabric-samples directory created.
 
-3. Check ledger state related configs in 'FabricV2_SampleNetworkApp/docker/docker-compose-couch.yaml' file.
+3. (OPTIONAL - To tweak couchDB default configs) Check ledger state related configs in 'FabricV2_SampleNetworkApp/docker/docker-compose-couch.yaml' file.
    - You can change CouchDB related configs in each _Peer_ defined for each _couchDB_ container. Just change environment values defined in _Peer_.
    - For more info follow this doc - [doc_link](https://hyperledger-fabric.readthedocs.io/en/release-2.2/couchdb_as_state_database.html)
 
@@ -28,7 +28,7 @@
 
 > :memo: **Note:** From now on 'FabricV2_SampleNetworkApp' will be our project_home.
 
-4. Run _./scripts/start_fabric-ca.sh_ from project_home dir -> to start fabric-ca containers needed for crypto-materials
+4. Run _./scripts/start_fabric-ca.sh_ from project_home -> to start fabric-ca containers needed for crypto-materials
 
    - Check new fabric ca containers will be up and running.
    - Also check fabric-ca (volume dir for fabric-ca containers) created under ./organizations
@@ -164,6 +164,4 @@
 
 [Help](https://docs.google.com/document/d/1HPvIubGyVd9m5q4U-rwNbLDViEF10bpJAmBN9pycTvY/edit?usp=sharing)
 
-Please Star ⭐ This Repository
-
-Thank you so much!
+Please Star ⭐ This Repository.
