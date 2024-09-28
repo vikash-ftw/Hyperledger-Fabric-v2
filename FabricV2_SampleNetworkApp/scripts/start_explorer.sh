@@ -52,7 +52,7 @@ COMPOSE_FILES="-f ${COMPOSE_FILE_EXPLORER}"
 docker-compose ${COMPOSE_FILES} up -d 2>&1
 
 if [ $? -ne 0 ]; then
-    echo "ERROR! - Unable to run containers"
+    echo "ERROR !!!! Unable to start Explorer containers"
     exit 1
 fi
 docker ps
