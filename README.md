@@ -18,26 +18,26 @@
 
 2. Run _./loadFabricDependencies.sh_ -> to install all fabric binaries of specific version in your cloned project repo.
 
-   - Check new folders created by above script -> bin, config and fabric-samples directory created.
+   - Check new folders created by above script -> bin, config and fabric-samples directory should be created.
 
 3. (OPTIONAL - To tweak couchDB default configs) Check ledger state related configs in 'FabricV2_SampleNetworkApp/docker/docker-compose-couch.yaml' file.
    - You can change CouchDB related configs in each _Peer_ defined for each _couchDB_ container. Just change environment values defined in _Peer_.
    - For more info follow this doc - [doc_link](https://hyperledger-fabric.readthedocs.io/en/release-2.2/couchdb_as_state_database.html)
 
-> :memo: **Note:** We can generate crypto-materials via cryptogen(For testing and development purpose) or Fabric CA(For Production purpose) - We will use Fabric CA in our case.
+> :memo: **Note:** We can generate certificates and cryptographic key pairs (crypto-materials) that authenticate and authorize entities on the network via cryptogen (For testing and development purpose) or Fabric CA (For Production purpose) - We will use Fabric CA in our case.
 
 > :memo: **Note:** From now on 'FabricV2_SampleNetworkApp' will be our project_home.
 
 4. Run _./scripts/start_fabric-ca.sh_ from project_home -> to start fabric-ca containers needed for crypto-materials
 
    - Check new fabric ca containers will be up and running.
-   - Also check fabric-ca (volume dir for fabric-ca containers) created under ./organizations
+   - Also check fabric-ca (volume directory for fabric-ca containers) created under ./organizations
 
-5. Run _./scripts/registerEnroll.sh_ from project_home -> to create crypto-materials for peers and orderers
+5. Run _./scripts/registerEnroll.sh_ from project_home -> to create crypto-materials for peers, orderers and other participating entities.
 
-   - Check out ordererOrganizations and peerOrganizations folders under ./organizations dir containing all crypto-materials related to peers and orderers.
+   - Check out ordererOrganizations and peerOrganizations folders under ./organizations directory containing all crypto-materials related to peers and orderers.
 
-6. Run _./organizations/ccp-generate.sh_ from project_home -> to create CCP(Common Connection Profile) files details under ./organizations/peerOrganizations dir
+6. Run _./organizations/ccp-generate.sh_ from project_home -> to create CCP(Common Connection Profile) files details under ./organizations/peerOrganizations directory
 
    - Check out ./organizations/peerOrganizations/org1.example.com/connection-org1.json and connection-org1.yaml files created by script
 
@@ -46,34 +46,36 @@
    - Check out ./system-genesis-block folder created under project_home containing genesis.block file
    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
-8. Run _./scripts/start_network.sh_ from project_home -> to create peers, orderers and couchDB and other containers
+8. Run _./scripts/start_network.sh_ from project_home -> to create and run our peers, orderers, couchDB and other network containers
 
-   - Check out new peers, orderers and couchDB containers up and running
-   - Also check out /var/hyperledger/ folder (volume dir for all the created containers)
+   - Check out new peers, orderers, couchDB and other network containers up and running
+   - Also check out /var/hyperledger/ folder (volume directory for all our peers, orderers and couchDB containers)
    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
-9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join all peers on this channel
+9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join peers to this newly created channel
 
-   - Check out ./channel-artifacts dir containing 3 files :- anchor and channel .tx files and also .block file
+   - Check out ./channel-artifacts directory containing 3 files :- anchor and channel related .tx files and also .block file
    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
-10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode
-    - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file)
-    - Also check out new dev-peer docker containers up and running to handle chaincode invocation request
+10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode deployment
+
+    - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file) created on 'project_home' directory
+    - Also check out new dev-peer containers up and running (chaincode containers) with their specific smartcontract version like 'v1', 'v2'. These containers will handle chaincode invocation requests
     - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers.**
-11. (For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
 
-    - Check if invoked transaction is committed or failed - if committed then chaincode is fine and ready to handle app request
+11. (OPTIONAL - For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
 
-12. Now go to './organizations/clientOrg/app' directory for all the application related work
+    - Check if invoked transaction is committed or failed - if successfully committed then chaincode is fine and ready to handle request made via application endpoint
+
+12. Now go to './organizations/clientOrg/app' directory for all the application related task
 
     - Run _npm install_ (Node version must be v20.14)
     - Now Run _npm run start_ (start our node server)
     - If all goes well without any error while server start then check out -
-    - Check out './organizations/clientOrg/app/identity' folder container waller identities for admin and user
-    - Newly created user identity using fabric CA will be used to invoke chaincode on our network.
+    - Check out './organizations/clientOrg/app/identity' directory containing wallet identities for admin and user. (Generated identities for our client app)
+    - Newly created user identity generated via fabric CA will now be used to invoke chaincode on our network.
 
-13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server
+13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server.
 
 ### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
 
@@ -112,7 +114,7 @@
    },
    ```
 
-   - **Here in the "organizations": "Org1MSP": "adminPrivateKey": "path" key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' dir (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing 'privateKey-filename' under "organizations": "Org1MSP": "adminPrivateKey": "path" key)**
+   - **Here in the "organizations": "Org1MSP": "adminPrivateKey": "path" key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' directory (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing 'privateKey-filename' under "organizations": "Org1MSP": "adminPrivateKey": "path" key)**
 
    - **An example case is there defined above under '### example - ###'**
 
