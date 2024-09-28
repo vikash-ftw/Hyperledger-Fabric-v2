@@ -44,24 +44,23 @@
 7. Run _./createFirstGenesisBlock.sh_ from project_home -> to create genesis block of our network
 
    - Check out ./system-genesis-block folder created under project_home containing genesis.block file
-   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
 8. Run _./scripts/start_network.sh_ from project_home -> to create and run our peers, orderers, couchDB and other network containers
 
    - Check out new peers, orderers, couchDB and other network containers up and running
    - Also check out /var/hyperledger/ folder (volume directory for all our peers, orderers and couchDB containers)
-   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
+   - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
 
 9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join peers to this newly created channel
 
    - Check out ./channel-artifacts directory containing 3 files :- anchor and channel related .tx files and also .block file
-   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
+   - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
 
 10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode deployment
 
     - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file) created on 'project_home' directory
     - Also check out new dev-peer containers up and running (chaincode containers) with their specific smartcontract version like 'v1', 'v2'. These containers will handle chaincode invocation requests
-    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers.**
+    - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
 
 11. (OPTIONAL - For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
 
