@@ -84,42 +84,7 @@
 
    - So that explorer containers can be created in same docker network in which fabric network is running.
 
-3. Now edit **.connection-profile/test-network.json** file and make changes ->
-
-   - change "name" key to your running fabric network's name.
-   - go to "organizations": "Org1MSP": "adminPrivateKey": "path" key and change the priv_sk to private key in exist in your peerOrganizations folder.
-
-   ```
-   "organizations": {
-      "Org1MSP": {
-         "mspid": "Org1MSP",
-         "adminPrivateKey": {
-         ###
-         example -
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/f4f057d9967bdb39ee081423eu57h83f4423d67b85326254dbb059107763bb3b_sk"
-         ###
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/<privateKey-filename>_sk"
-         },
-         "peers": [
-            "peer0.org1.example.com",
-            "peer1.org1.example.com",
-            "peer2.org1.example.com",
-            "peer3.org1.example.com"
-         ],
-         "signedCert": {
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
-         }
-      }
-   },
-   ```
-
-   - **Here in the "organizations": "Org1MSP": "adminPrivateKey": "path" key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' directory (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing 'privateKey-filename' under "organizations": "Org1MSP": "adminPrivateKey": "path" key)**
-
-   - **An example case is there defined above under '### example - ###'**
-
-   - **Make sure the key path should start with '/tmp/crypto/' as mentioned in example**
-
-4. Same fabric network name to be mentioned in **config.json** file under 'network-configs' key attribute.
+3. The fabric's network full name to be mentioned in **config.json** file under 'network-configs' key.
 
    - For example -
 
@@ -137,20 +102,19 @@
 
    - Under 'network-configs' -> "name" can be any name you want to give to your explorer dashboard like currently it is - "Explorer Test Network"
 
-5. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
+4. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-6. Now go to the scripts directory in 'Project Home'.
+5. Now go to the scripts directory in 'Project Home'.
 
    - To start explorer then run _./scripts/start_explorer.sh_
    - To stop explorer then run _./scripts/stop_explorer.sh_
    - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
-7. Now open the explorer dashboard in browser on _port - 8080_.
+6. Now open the explorer dashboard in browser on _port - 8080_.
 
-8. If server is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
+7. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
 
-   - If the error is related to "Failed to create identity" then there might be issue the way you copied the private key in **test-network.json**.
-   - Or it may be related to wrong docker network name. **So please check the fabric-explorer container logs**
+   - It may be related to wrong docker network name. **So please check the fabric-explorer container logs**
    - Also after resolving the error, delete the volumes created by fabric explorer
 
      - These two volumes are:
