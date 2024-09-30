@@ -1,10 +1,18 @@
 #!/bin/bash
 # deploy smart contract
 
-CHANNEL_NAME="$1"
-VERSION="$2"
-: ${CHANNEL_NAME:="samplechannel"}
-: ${VERSION:="1"}
+# Default values for channelname and version
+CHANNEL_NAME="${1:-samplechannel}"
+VERSION="${2:-1}"
+# Set the default value of SKIP_PKG_INSTALL as 0 if no third argument is provided
+SKIP_PKG_INSTALL="${3:-0}"
+
+# Validate the SKIP_PKG_INSTALL variable to ensure it's either 0 or 1
+if [[ "$SKIP_PKG_INSTALL" != "0" && "$SKIP_PKG_INSTALL" != "1" ]]; then
+  echo "Invalid value for 3rd positional arg i.e SKIP_PKG_INSTALL: $SKIP_PKG_INSTALL"
+  echo "Please provide 0 or 1."
+  exit 1
+fi
 
 MAX_RETRY="3"
 VERBOSE="false"
@@ -244,10 +252,25 @@ queryCommitted() {
 }
 
 ## at first we package the chaincode
-packageChaincode
+# Now use SKIP_PKG_INSTALL as a boolean flag
+if [[ "$SKIP_PKG_INSTALL" -eq 1 ]]; then
+  echo "----** SKIPPING - as SKIP flag is set to 1 **----"
+  echo " -> Package Chaincode is skipped <-"
+  echo "----------****----------"
+else
+  packageChaincode
+fi
 
 ## Install chaincode on all org peers
-installChaincode 
+# Now use SKIP_PKG_INSTALL as a boolean flag
+if [[ "$SKIP_PKG_INSTALL" -eq 1 ]]; then
+  echo "----** SKIPPING - as SKIP flag is set to 1 **----"
+  echo " -> Install Chaincode is skipped <-"
+  echo "----------****----------"
+else
+  installChaincode
+fi
+ 
 ## query whether the chaincode is installed
 queryInstalled
 
