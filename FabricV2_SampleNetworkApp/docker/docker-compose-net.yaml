@@ -110,7 +110,7 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.org1.example.com:7051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.org1.example.com:7051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:2.5
+      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
     volumes:
       - /var/run/:/host/var/run/
       - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -146,7 +146,7 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.org1.example.com:8051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.org1.example.com:8051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:2.5
+      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
     volumes:
       - /var/run/:/host/var/run/
       - ../organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -182,7 +182,7 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.org1.example.com:5051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org1.example.com:5051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:2.5
+      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
     volumes:
       - /var/run/:/host/var/run/
       - ../organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp:/etc/hyperledger/fabric/msp
@@ -218,7 +218,7 @@ services:
       - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.org1.example.com:6051
       - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3.org1.example.com:6051
       - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:2.5
+      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
     volumes:
       - /var/run/:/host/var/run/
       - ../organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp:/etc/hyperledger/fabric/msp
