@@ -2,7 +2,7 @@
 
 - Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
 
-- Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+- Check Hyperledger Fabric version 2.5 (currently in development) -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
 
 ## ---- Fabric Architecture Overview ----
 
@@ -76,6 +76,10 @@
 
 13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server.
 
+14. Some Dashboard URLs
+    - CouchDB_Fauxton Dashboard URL -> http://\<IP>:5984/\_utils
+    - Portainer URL -> http://\<IP>:9000
+
 ### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
 
 > :memo: **Note:** From now on 'fabric-explorer' directory under 'FabricV2_SampleNetworkApp' directory will be home for all the below mentioned changes.
@@ -104,13 +108,13 @@
 
 4. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-5. Now go to the scripts directory in 'Project Home'.
+5. Now go to the FabricV2_SampleNetworkApp directory.
 
    - To start explorer then run _./scripts/start_explorer.sh_
    - To stop explorer then run _./scripts/stop_explorer.sh_
    - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
-6. Now open the explorer dashboard in browser on _port - 8080_.
+6. Now open the Hyperledger Explorer dashboard on URL -> http://\<IP>:8080
 
 7. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
 
