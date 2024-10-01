@@ -104,7 +104,9 @@ class FabricLedgerContract extends Contract {
     const assetBuffer = Buffer.from(JSON.stringify(assetJSON));
     // add event
     ctx.stub.setEvent("updateProductEvent", assetBuffer);
-    return ctx.stub.putState(productNumber, assetBuffer);
+    await ctx.stub.putState(productNumber, assetBuffer);
+    console.info("-- Performed Context Txn for update --");
+    return assetJSON;
   }
 
   // Delete an asset
@@ -117,7 +119,9 @@ class FabricLedgerContract extends Contract {
     }
     // add event
     ctx.stub.setEvent("deleteProductEvent", Buffer.from(productNumber));
-    return ctx.stub.deleteState(productNumber);
+    await ctx.stub.deleteState(productNumber);
+    console.info("-- Performed Context Txn for delete --");
+    return productNumber;
   }
 
   // Fetch an asset by Rich-Query (only supported in couchDB)

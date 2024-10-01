@@ -62,16 +62,21 @@ const addProduct = asyncHandler(async (req, res) => {
     // attach commitListener - (listening on first 2 endorsing peers)
     await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
 
-    // now submit the transaction with required args
-    const bufferResp = await transaction.submit(
+    // Data payload
+    const payload = [
       productNumber,
       productManufacturer,
       productName,
-      productOwnerName
-    );
+      productOwnerName,
+    ];
+
+    console.log(`Data Payload : ${payload}`);
+
+    // now submit the transaction with required args
+    const bufferResp = await transaction.submit(...payload);
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
-    console.log(`Buffer Resp - ${bufferResp.toString()}`);
+    console.log(`Buffer Response - ${bufferResp.toString()}`);
     res
       .status(200)
       .json(
@@ -109,11 +114,13 @@ const getProductById = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
+    console.log(`Data Fetch Payload - ${productNumber}`);
+
     let result = await contract.evaluateTransaction(
       "getProductData",
       productNumber
     );
-    console.log(`-- getProductById Transaction Completed --`);
+    console.log(`${GREEN} -- getProductById Transaction Completed -- ${RESET}`);
     res
       .status(200)
       .json(
@@ -167,11 +174,13 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // attach commitListener
     await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
 
+    console.log(`Data Payload : ${productNumber}`);
+
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
 
-    console.log("** Transaction Committed **");
-    console.log("Buffer Resp - ", bufferResp);
+    console.log(`${GREEN}** Transaction Committed **${RESET}`);
+    console.log(`Buffer Response - ${bufferResp.toString()}`);
     console.log("**** Product Deleted ****");
     res
       .status(200)
@@ -239,14 +248,16 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     // attach commitListener
     await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
 
+    // payload
+    const payload = [productNumber, oldOwnerName, newOwnerName];
+
+    console.log(`Data Payload - ${payload}`);
+
     // now submit the transaction with required args
-    const bufferResp = await transaction.submit(
-      productNumber,
-      oldOwnerName,
-      newOwnerName
-    );
-    console.log("** Transaction Committed **");
-    console.log("Buffer Resp - ", bufferResp.toString());
+    const bufferResp = await transaction.submit(...payload);
+
+    console.log(`${GREEN}** Transaction Committed **${RESET}`);
+    console.log(`Buffer Response - ${bufferResp.toString()}`);
     console.log("**** Product Asset Updated ****");
     res
       .status(200)
@@ -297,6 +308,8 @@ const queryOnProductOwner = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
+    console.log(`Data Fetch Query - ${selectorQueryString}`);
+
     const result = await contract.evaluateTransaction(
       "queryProductData",
       selectorQueryString
@@ -341,6 +354,8 @@ const queryOnProductName = asyncHandler(async (req, res) => {
     const network = await instance.getNetwork(channelName);
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
+
+    console.log(`Data Fetch Query - ${selectorQueryString}`);
 
     const result = await contract.evaluateTransaction(
       "queryProductData",
@@ -391,12 +406,14 @@ const getTransactionHistory = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
+    console.log(`Data Txn History Fetch Key - ${txnId}`);
+
     console.info(`Data Fetch Payload - ${txnId}`);
     const result = await contract.evaluateTransaction(
       "getHistoryForKey",
       txnId
     );
-    console.log(`-- Fetch Completed --`);
+    console.log(`-- Txn History Fetch Completed --`);
     res
       .status(200)
       .json(
