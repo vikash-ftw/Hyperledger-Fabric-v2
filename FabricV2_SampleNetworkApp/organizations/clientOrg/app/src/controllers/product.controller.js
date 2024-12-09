@@ -59,8 +59,8 @@ const addProduct = asyncHandler(async (req, res) => {
     const DLT_txnId = transaction.getTransactionId();
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
-    // attach commitListener - (listening on first 2 endorsing peers)
-    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
+    // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
+    network.addCommitListener(listener, peers.slice(0, 1), DLT_txnId);
 
     // Data payload
     const payload = [
