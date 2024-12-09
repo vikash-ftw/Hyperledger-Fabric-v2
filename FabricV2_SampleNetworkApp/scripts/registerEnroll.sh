@@ -182,7 +182,7 @@ function createOrg1() {
   mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/ca
   cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
 
-  ## Peer 2 crypto
+  ## Peer 3 crypto
   displayMsg "Registering peer3"
   set -x
   fabric-ca-client register --caname ca-org1 --id.name peer3 --id.secret peer3pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
