@@ -84,11 +84,11 @@
 
 > :memo: **Note:** From now on 'fabric-explorer' directory under 'FabricV2_SampleNetworkApp' directory will be home for all the below mentioned changes.
 
-2. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
+1. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
 
    - So that explorer containers can be created in same docker network in which fabric network is running.
 
-3. The fabric's network full name to be mentioned in **config.json** file under 'network-configs' key.
+2. The fabric's network full name to be mentioned in **config.json** file under 'network-configs' key.
 
    - For example -
 
@@ -106,17 +106,17 @@
 
    - Under 'network-configs' -> "name" can be any name you want to give to your explorer dashboard like currently it is - "Explorer Test Network"
 
-4. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
+3. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-5. Now go to the FabricV2_SampleNetworkApp directory.
+4. Now go to the FabricV2_SampleNetworkApp directory.
 
    - To start explorer then run _./scripts/start_explorer.sh_
    - To stop explorer then run _./scripts/stop_explorer.sh_
    - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
-6. Now open the Hyperledger Explorer dashboard on URL -> http://\<IP>:8080
+5. Now open the Hyperledger Explorer dashboard on URL -> http://\<IP>:8080
 
-7. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
+6. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
 
    - It may be related to wrong docker network name. **So please check the fabric-explorer container logs**
    - Also after resolving the error, delete the volumes created by fabric explorer
@@ -126,11 +126,7 @@
        1. fabric_net_pgdata
        2. fabric_net_walletstore
 
-     - So delete these two volumes by running 'docker volume rm' command available in docker.
-     - Now recreate the explorer container as mentioned in step - 6.
+     - So delete these two volumes by running 'docker volume rm' command available in docker. **(Only delete if you faced error in running Explorer service)**
+     - Now recreate the explorer container as mentioned in step - 4.
 
-## ---- Help Material ----
-
-[Help](https://docs.google.com/document/d/1HPvIubGyVd9m5q4U-rwNbLDViEF10bpJAmBN9pycTvY/edit?usp=sharing)
-
-Please Star ⭐ This Repository.
+**Please Star ⭐ This Repository.**
