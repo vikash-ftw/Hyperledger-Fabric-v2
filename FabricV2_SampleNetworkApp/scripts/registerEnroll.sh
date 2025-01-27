@@ -30,6 +30,7 @@ verifyResult() {
   echo
 }
 
+# Org1 having 2 Peers setup
 function createOrg1() {
   displayMsg "Enrolling the CA admin"
   mkdir -p organizations/peerOrganizations/org1.example.com/
@@ -71,7 +72,7 @@ function createOrg1() {
   set +x
   verifyResult $res "Registered the org admin" "Failed to register org admin!"
 
-  ## Peer 0 crypto
+  ## peer0 crypto
   displayMsg "Registering peer0"
   set -x
   fabric-ca-client register --caname ca-org1 --id.name peer0 --id.secret peer0pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
@@ -108,7 +109,7 @@ function createOrg1() {
   mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/ca
   cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
 
-  ## Peer 1 crypto
+  ## peer1 crypto
   displayMsg "Registering peer1"
   set -x
   fabric-ca-client register --caname ca-org1 --id.name peer1 --id.secret peer1pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
@@ -145,81 +146,7 @@ function createOrg1() {
   mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/ca
   cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
 
-  ## Peer 2 crypto
-  displayMsg "Registering peer2"
-  set -x
-  fabric-ca-client register --caname ca-org1 --id.name peer2 --id.secret peer2pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Registered peer2" "Failed to register peer2!"
-
-  displayMsg "Generating the peer2 msp"
-  set -x
-  fabric-ca-client enroll -u https://peer2:peer2pw@localhost:7054 --caname ca-org1 -M ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp --csr.hosts peer2.org1.example.com --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Generated peer2 msp" "Failed to generate peer2 msp!"
-
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/config.yaml
-
-  displayMsg "Generating the peer2-tls certificates"
-  set -x
-  fabric-ca-client enroll -u https://peer2:peer2pw@localhost:7054 --caname ca-org1 -M ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls --enrollment.profile tls --csr.hosts peer2.org1.example.com --csr.hosts localhost --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Generated the peer2-tls certificate" "Failed to generate peer2-tls certificate!"
-
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/ca.crt
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/signcerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/server.crt
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/keystore/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/server.key
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/msp/tlscacerts
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/msp/tlscacerts/ca.crt
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/tlsca
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/ca
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
-
-  ## Peer 2 crypto
-  displayMsg "Registering peer3"
-  set -x
-  fabric-ca-client register --caname ca-org1 --id.name peer3 --id.secret peer3pw --id.type peer --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Registered peer3" "Failed to register peer3!"
-
-  displayMsg "Generating the peer3 msp"
-  set -x
-  fabric-ca-client enroll -u https://peer3:peer3pw@localhost:7054 --caname ca-org1 -M ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp --csr.hosts peer3.org1.example.com --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Generated peer3 msp" "Failed to generate peer3 msp!"
-
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp/config.yaml
-
-  displayMsg "Generating the peer3-tls certificates"
-  set -x
-  fabric-ca-client enroll -u https://peer3:peer3pw@localhost:7054 --caname ca-org1 -M ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls --enrollment.profile tls --csr.hosts peer3.org1.example.com --csr.hosts localhost --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
-  res=$?
-  set +x
-  verifyResult $res "Generated the peer3-tls certificate" "Failed to generate peer3-tls certificate!"
-
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/ca.crt
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/signcerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/server.crt
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/keystore/* ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/server.key
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/msp/tlscacerts
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/msp/tlscacerts/ca.crt
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/tlsca
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/tlscacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem
-
-  mkdir -p ${PWD}/organizations/peerOrganizations/org1.example.com/ca
-  cp ${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp/cacerts/* ${PWD}/organizations/peerOrganizations/org1.example.com/ca/ca.org1.example.com-cert.pem
-
-  ## Other user MSP related crypto
+  ## Other Org user and admin MSP related crypto
   displayMsg "Generating the user msp"
   set -x
   fabric-ca-client enroll -u https://user1:user1pw@localhost:7054 --caname ca-org1 -M ${PWD}/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/org1/tls-cert.pem
@@ -240,6 +167,7 @@ function createOrg1() {
   cp ${PWD}/organizations/peerOrganizations/org1.example.com/msp/config.yaml ${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/config.yaml
 }
 
+# OrdererOrg having 2 orderer setup
 function createOrderer() {
   displayMsg "Enrolling the CA admin"
   mkdir -p organizations/ordererOrganizations/example.com
@@ -309,7 +237,7 @@ function createOrderer() {
   mkdir -p ${PWD}/organizations/ordererOrganizations/example.com/msp/tlscacerts
   cp ${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/tlscacerts/* ${PWD}/organizations/ordererOrganizations/example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
-  ## Registering orderer1 (2nd Orderer)
+  ## Registering orderer2 (2nd Orderer)
   displayMsg "Registering orderer2"
   set -x
   fabric-ca-client register --caname ca-orderer --id.name orderer2 --id.secret orderer2pw --id.type orderer --tls.certfiles ${PWD}/organizations/fabric-ca/ordererOrg/tls-cert.pem
@@ -343,6 +271,7 @@ function createOrderer() {
   mkdir -p ${PWD}/organizations/ordererOrganizations/example.com/msp/tlscacerts
   cp ${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/tlscacerts/* ${PWD}/organizations/ordererOrganizations/example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
+  ## Other OrdererOrg admin MSP related crypto
   displayMsg "Generating the admin msp"
   set -x
   fabric-ca-client enroll -u https://ordererAdmin:ordererAdminpw@localhost:9054 --caname ca-orderer -M ${PWD}/organizations/ordererOrganizations/example.com/users/Admin@example.com/msp --tls.certfiles ${PWD}/organizations/fabric-ca/ordererOrg/tls-cert.pem

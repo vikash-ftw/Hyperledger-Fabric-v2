@@ -9,11 +9,14 @@ channel-artifacts/
 # exclude everything in logs
 logs/*
 
-# but logs should be there
+# but gitkeep file in logs should be there
 !logs/.gitkeep
 
-# system-genesis-block
-system-genesis-block/
+# exclude everything in temp
+temp/*
+
+# but gitkeep file in temp should be there
+!temp/.gitkeep
 
 # tar files
 *.tar

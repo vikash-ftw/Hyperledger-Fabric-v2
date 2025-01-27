@@ -11,14 +11,12 @@ volumes:
   # orderer2.example.com:
   # peer0.org1.example.com:
   # peer1.org1.example.com:
-  # peer2.org1.example.com:
-  # peer3.org1.example.com:
   portainer_data:
-  
+
 networks:
   fbn:
 
-# currently 2 orderers of org1 and 4 peers of org1 and 4 couchdb for each peer
+# 2 Orderers and 2 Peers(Org1) setup
 services:
   orderer.example.com:
     container_name: orderer.example.com
@@ -174,86 +172,6 @@ services:
     networks:
       - fbn
 
-  peer2.org1.example.com:
-    container_name: peer2.org1.example.com
-    image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
-    environment:
-      # Generic peer variables
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
-      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
-      - FABRIC_LOGGING_SPEC=INFO
-      #- FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_PROFILE_ENABLED=false
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
-      # Peer specific variabes
-      - CORE_PEER_ID=peer2.org1.example.com
-      - CORE_PEER_ADDRESS=peer2.org1.example.com:5051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:5051
-      - CORE_PEER_CHAINCODEADDRESS=peer2.org1.example.com:5052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:5052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer2.org1.example.com:5051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.org1.example.com:5051
-      - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
-    volumes:
-      - ../../config:/etc/hyperledger/peercfg
-      - /var/run/:/host/var/run/
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/msp:/etc/hyperledger/fabric/msp
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls:/etc/hyperledger/fabric/tls
-      - /var/hyperledger/peer2.org1.example.com:/var/hyperledger/production
-    working_dir: /root
-    command: peer node start
-    ports:
-      - 5051:5051
-    networks:
-      - fbn
-
-  peer3.org1.example.com:
-    container_name: peer3.org1.example.com
-    image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
-    environment:
-      # Generic peer variables
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
-      - FABRIC_CFG_PATH=/etc/hyperledger/peercfg
-      - FABRIC_LOGGING_SPEC=INFO
-      #- FABRIC_LOGGING_SPEC=DEBUG
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_PROFILE_ENABLED=false
-      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
-      # Peer specific variabes
-      - CORE_PEER_ID=peer3.org1.example.com
-      - CORE_PEER_ADDRESS=peer3.org1.example.com:6051
-      - CORE_PEER_LISTENADDRESS=0.0.0.0:6051
-      - CORE_PEER_CHAINCODEADDRESS=peer3.org1.example.com:6052
-      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:6052
-      - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.org1.example.com:6051
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3.org1.example.com:6051
-      - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/fabric/msp
-      - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_CHAINCODE_NODE_RUNTIME=hyperledger/fabric-nodeenv:$IMAGE_TAG_CC_NODE_ENV
-    volumes:
-      - ../../config:/etc/hyperledger/peercfg
-      - /var/run/:/host/var/run/
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/msp:/etc/hyperledger/fabric/msp
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls:/etc/hyperledger/fabric/tls
-      - /var/hyperledger/peer3.org1.example.com:/var/hyperledger/production
-    working_dir: /root
-    command: peer node start
-    ports:
-      - 6051:6051
-    networks:
-      - fbn
-  
   # Portainer service
   portainer:
     container_name: portainer

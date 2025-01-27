@@ -52,14 +52,12 @@ export CORE_PEER_ADDRESS=""
 # Define an array of organization names
 # ORG_NAMES=("Org1" "Org2" "Org3")
 ORG_NAMES=("Org1")
-TOTAL_PEERS_PER_ORG=4
-ORG1_PEERS_PORTS=(7051 8051 5051 6051)
+TOTAL_PEERS_PER_ORG=2
+ORG1_PEERS_PORTS=(7051 8051)
 
 # Org1 Peers
 PEER0_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
 PEER1_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com/tls/ca.crt
-PEER2_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com/tls/ca.crt
-PEER3_ORG1_CA=${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer3.org1.example.com/tls/ca.crt
 
 displayMsg() {
     msg=$1
@@ -117,12 +115,6 @@ installChaincode() {
 					export CORE_PEER_ADDRESS=localhost:${ORG1_PEERS_PORTS[$i]}
 				elif [ $i -eq 1 ]; then
 					export CORE_PEER_TLS_ROOTCERT_FILE=$PEER1_ORG1_CA
-					export CORE_PEER_ADDRESS=localhost:${ORG1_PEERS_PORTS[$i]}
-				elif [ $i -eq 2 ]; then
-					export CORE_PEER_TLS_ROOTCERT_FILE=$PEER2_ORG1_CA
-					export CORE_PEER_ADDRESS=localhost:${ORG1_PEERS_PORTS[$i]}
-				else
-					export CORE_PEER_TLS_ROOTCERT_FILE=$PEER3_ORG1_CA
 					export CORE_PEER_ADDRESS=localhost:${ORG1_PEERS_PORTS[$i]}
 				fi
 
