@@ -410,22 +410,21 @@ const queryOnProductName = asyncHandler(async (req, res) => {
 // Controller to check the history for a key
 const getTransactionHistory = asyncHandler(async (req, res) => {
   console.log("--- Controller: getTransactionHistory called ---");
-  const { txnId } = req.body;
+  const { txnId, channelName } = req.body;
   
-  if (!txnId) {
+  if (!(txnId && channelName)) {
     console.error(
-      `Error in Controller - Invalid request parameter!`
+      `${RED} Error in Controller - Invalid request parameters!${RESET}`
     );
     throw new ApiError(400, "Invalid request parameters!");
   }
-  if (txnId?.trim() === "") {
+  if ([txnId, channelName].some((field) => field?.trim() === "")) {
     console.error(
-      `Error in Controller - Invalid request parameter!`
+      `${RED} Error in Controller - Invalid value in request parameters!${RESET}`
     );
-    throw new ApiError(400, "Empty Value in request parameters!");
+    throw new ApiError(400, "Invalid value in request parameters!");
   }
 
-  const channelName = process.env.CHANNEL_NAME;
   const chaincodeName = process.env.CHAINCODE_NAME;
 
   try {
@@ -435,6 +434,8 @@ const getTransactionHistory = asyncHandler(async (req, res) => {
     console.log(`-- Fetching Contract - ${chaincodeName} --`);
     const contract = network.getContract(chaincodeName);
 
+    console.log(`Data Txn History Fetch Key - ${txnId}`);
+
     // payload
     console.log(`Data Fetch Payload - ${txnId}`);
     const result = await contract.evaluateTransaction(
@@ -442,7 +443,7 @@ const getTransactionHistory = asyncHandler(async (req, res) => {
       txnId
     );
     const resultJson = utf8Decoder.decode(result);
-    console.log(`-- Fetch Completed --`);
+    console.log(`-- Txn History Fetch Completed --`);
     res
       .status(200)
       .json(
