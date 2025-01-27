@@ -1,8 +1,4 @@
-## ---- Steps to run Fabric V2 network ----
-
-- Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
-
-- Check Hyperledger Fabric version 2.5 -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+## ---- Steps to run Fabric v2.5 network ----
 
 ### **-- Fresh Setup on New Machine --**
 
@@ -35,81 +31,41 @@
 
    - Check out ./organizations/peerOrganizations/org1.example.com/connection-org1.json and connection-org1.yaml files created by script
 
-7. Run _./createFirstGenesisBlock.sh_ from project_home -> to create genesis block of our network
-
-   - Check out ./system-genesis-block folder created under project_home containing genesis.block file
-   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
-
-8. Run _./scripts/start_network.sh_ from project_home -> to create peers, orderers and couchDB and other containers
+7. Run _./scripts/start_network.sh_ from project_home -> to create peers, orderers and couchDB and other containers
 
    - Check out new peers, orderers and couchDB containers up and running
    - Also check out /var/hyperledger/ folder (volume dir for all the created containers)
    - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
 
-9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join all peers on this channel
+8. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join all peers on this channel
 
-   - Check out ./channel-artifacts dir containing 3 files :- anchor and channel .tx files and also .block file
-   - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers**.
+   - Check out ./channel-artifacts dir containing channel block file.
 
-10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode
+9. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode
     - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file)
     - Also check out new dev-peer docker containers up and running to handle chaincode invocation request
     - **Make sure none of the container goes in 'exit' state so wait for approx ~1min and then check containers.**
-11. (For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
+
+10. (For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command.
 
     - Check if invoked transaction is committed or failed - if committed then chaincode is fine and ready to handle app request
 
-12. Now go to './organizations/clientOrg/app' directory for all the application related work
+11. Now go to './organizations/clientOrg/app' directory for all the application related work
 
     - Run _npm install_ (Node version must be v20.14)
     - Now Run _npm run start_ (start our node server)
 
-13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server
+12. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server
 
 ### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
 
 > :memo: **Note:** From now on 'fabric-explorer' directory under 'FabricV2_SampleNetworkApp' directory will be home for all the below mentioned changes.
 
-2. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
+1. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
 
    - So that explorer containers can be created in same docker network in which fabric network is running.
 
-3. Now edit **.connection-profile/test-network.json** file and make changes ->
-
-   - change "name" key to your running fabric network's name.
-   - go to "organizations": "Org1MSP": "adminPrivateKey": "path" key and change the priv_sk to private key in exist in your peerOrganizations folder.
-
-   ```
-   "organizations": {
-      "Org1MSP": {
-         "mspid": "Org1MSP",
-         "adminPrivateKey": {
-         ###
-         example -
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/f4f057d9967bdb39ee081423eu57h83f4423d67b85326254dbb059107763bb3b_sk"
-         ###
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/<privateKey-filename>_sk"
-         },
-         "peers": [
-            "peer0.org1.example.com",
-            "peer1.org1.example.com",
-            "peer2.org1.example.com",
-            "peer3.org1.example.com"
-         ],
-         "signedCert": {
-         "path": "/tmp/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/signcerts/cert.pem"
-         }
-      }
-   },
-   ```
-
-   - **Here in the "organizations": "Org1MSP": "adminPrivateKey": "path" key -> copy your private key from `peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp/keystore/priv_sk` : Here priv_sk is the filename of private key file under 'keystore' dir (Do not copy the contents inside this priv_sk file - Just copy the filename and paste in 'path' replacing 'privateKey-filename' under "organizations": "Org1MSP": "adminPrivateKey": "path" key)**
-
-   - **An example case is there defined above under '### example - ###'**
-
-   - **Make sure the key path should start with '/tmp/crypto/' as mentioned in example**
-
-4. Same fabric network name to be mentioned in **config.json** file under 'network-configs' key attribute.
+2. The fabric's network full name to be mentioned in **config.json** file under 'network-configs' key attribute.
 
    - For example -
 
@@ -127,20 +83,19 @@
 
    - Under 'network-configs' -> "name" can be any name you want to give to your explorer dashboard like currently it is - "Explorer Test Network"
 
-5. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
+3. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
 
-6. Now go to the scripts directory in 'Project Home'.
+4. Now go to the scripts directory in 'Project Home'.
 
    - To start explorer then run _./scripts/start_explorer.sh_
    - To stop explorer then run _./scripts/stop_explorer.sh_
    - To remove all explorer containers then run _./scripts/remove_explorer.sh_
 
-7. Now open the explorer dashboard in browser on _port - 8080_.
+5. Now open the explorer dashboard in browser on _port - 8080_.
 
-8. If server is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
+6. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
 
-   - If the error is related to "Failed to create identity" then there might be issue the way you copied the private key in **test-network.json**.
-   - Or it may be related to wrong docker network name. **So please check the fabric-explorer container logs**
+   - It may be related to wrong docker network name. **So please check the fabric-explorer container logs**
    - Also after resolving the error, delete the volumes created by fabric explorer
 
      - These two volumes are:
@@ -148,5 +103,5 @@
        1. fabric_net_pgdata
        2. fabric_net_walletstore
 
-     - So delete these two volumes by running 'docker volume rm' command available in docker.
-     - Now recreate the explorer container as mentioned in step - 6.
+     - So delete these two volumes by running 'docker volume rm' command available in docker. **(Only delete if you faced error in running Explorer service)**
+     - Now recreate the explorer container as mentioned in step - 4.
