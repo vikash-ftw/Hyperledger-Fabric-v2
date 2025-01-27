@@ -20,8 +20,8 @@ fi
 
 docker-compose --env-file $ENV_FILE ${COMPOSE_FILES} up -d 2>&1
 
-docker ps
 if [ $? -ne 0 ]; then
-echo "ERROR !!!! Unable to start network"
-exit 1
+    echo "ERROR !!!! Unable to start network"
+    exit 1
 fi
+docker ps
