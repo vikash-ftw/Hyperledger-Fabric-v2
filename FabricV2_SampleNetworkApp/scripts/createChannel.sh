@@ -25,6 +25,9 @@ export PATH=${PWD}/../bin:$PATH
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
+# orderer2
+export ORDERER2_CA=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+
 # Define an array of organization names
 # ORG_NAMES=("Org1" "Org2" "Org3")
 ORG_NAMES=("Org1")
@@ -63,60 +66,49 @@ verifyResult() {
   echo
 }
 
-createChannelTxn() {
-	displayMsg "--- Creating ${CHANNEL_NAME} txn file ---"
-	set -x
-	configtxgen -profile SampleChannel -outputCreateChannelTx ./channel-artifacts/${CHANNEL_NAME}.tx -channelID $CHANNEL_NAME
-	res=$?
-	set +x
-  	verifyResult $res "txn file generated for $CHANNEL_NAME" "Failed in generating $CHANNEL_NAME txn file!"
-}
-
-createAncorPeerTxn() {
-	displayMsg "--- Creating org anchor peer txn for ${CHANNEL_NAME} ---"
-	#for orgmsp in Org1MSP Org2MSP Org3MSP; do
-    for orgmsp in Org1MSP; do
-		displayMsg "--- Generating anchor peer update transaction for ${orgmsp} ---"
-		set -x
-		configtxgen -profile SampleChannel -outputAnchorPeersUpdate ./channel-artifacts/${orgmsp}anchors.tx -channelID $CHANNEL_NAME -asOrg ${orgmsp}
-		res=$?
-		set +x
-		verifyResult $res "peer0 -> anchorTxn file generated for ${orgmsp}" "Failed in generating peer0 anchorTxn file for ${orgmsp}!"
-	done
-}
-
-createChannel() {
-	displayMsg "--- Creating the ${CHANNEL_NAME} ---"
-	
-	# Org1 will create this channel therefore setting global variables for it
+# New v2.5.9 channel creation methods
+createChannelGenesisBlock() {
+	displayMsg "--- Channel - ${CHANNEL_NAME} genesion block creation phase (NEW) ---"
+	# Org1 will create the channel genesis therefore setting global variables for it
 	export CORE_PEER_LOCALMSPID="Org1MSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
     export CORE_PEER_ADDRESS=localhost:7051
 
-	local rc=1
-	local COUNTER=0
-	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-		sleep 1
-		if [ $COUNTER -gt 0 ]; then
-			echo "Command Failed - Retrying ..."
-			echo "-- Retry Attempt $COUNTER --"
-			sleep 2
-		fi
-		set -x
-		peer channel create -o localhost:7050 -c $CHANNEL_NAME --ordererTLSHostnameOverride orderer.example.com -f ./channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./channel-artifacts/${CHANNEL_NAME}.block --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&./logs/create-channel-log.txt
-		res=$?
-		set +x
-		rc=$res 	
-		COUNTER=$((COUNTER + 1))
-		cat ./logs/create-channel-log.txt
-	done
-	verifyResult $res "Channel -> ${CHANNEL_NAME} created successfully" "Failed in creating channel - ${CHANNEL_NAME}!"
+	set -x
+	configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+	res=$?
+	set +x
+	verifyResult $res "Generated channel configuration transaction for channel - ${CHANNEL_NAME}" "Failed to generate channel configuration transaction for channel - ${CHANNEL_NAME}"
+}
+
+createNewChannel() {
+	displayMsg "--- Channel - ${CHANNEL_NAME} creation phase and ordered join phase (NEW) ---"
+	# adding orderers
+	export ORDERER_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.crt
+	export ORDERER_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/server.key
+
+	# orderer2
+	export ORDERER2_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+	export ORDERER2_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.key
+
+	# orderers join channel - (*IMP - use ORDERER_ADMIN_LISTENADDRESS port value in -o)
+	set -x
+	osnadmin channel join --channelID ${CHANNEL_NAME} --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:7053 --ca-file "$ORDERER_CA" --client-cert "$ORDERER_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER_ADMIN_TLS_PRIVATE_KEY"
+	res=$?
+	set +x
+	verifyResult $res "Channel - ${CHANNEL_NAME} created and orderer joined the channel" "Failed to create channel - ${CHANNEL_NAME} and join orderer"
+
+	set -x
+	osnadmin channel join --channelID ${CHANNEL_NAME} --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:8053 --ca-file "$ORDERER2_CA" --client-cert "$ORDERER2_ADMIN_TLS_SIGN_CERT" --client-key "$ORDERER2_ADMIN_TLS_PRIVATE_KEY"
+	res=$?
+	set +x
+	verifyResult $res "Channel - ${CHANNEL_NAME} created and orderer2 joined the channel" "orderer2 Failed to join channel - ${CHANNEL_NAME}"
 }
 
 # Org and its peer join channel
-joinChannel() {
-	displayMsg "--- Channel - ${CHANNEL_NAME} Joining Phase ---"
+joinNewChannel() {
+	displayMsg "--- Channel - ${CHANNEL_NAME} Joining Phase (NEW) ---"
 	# org loop
 	for org in "${ORG_NAMES[@]}"; do
 		echo "-- Using organization ${org} --"
@@ -167,11 +159,103 @@ joinChannel() {
 	done
 }
 
-updateAnchorPeers() {
-	displayMsg "--- Defining Orgs Anchor Peer for channel - ${CHANNEL_NAME} ---"
+# create AnchorPeer txn id
+# NOTE: This requires jq and configtxlator for execution.
+createNewAncorPeerUpdate() {
+	displayMsg "--- Creating org anchor peer update for ${CHANNEL_NAME} (NEW) ---"
+	
+	# FetchChannelConfig Part
+	echo "---- Fetch Channel config section ----"
+
+	echo "Fetching the most recent configuration block for the channel"
+	export CORE_PEER_LOCALMSPID="Org1MSP"
+	set -x
+	peer channel fetch config ${PWD}/channel-artifacts/config_block.pb -o "localhost:7050 localhost:8050" -c $CHANNEL_NAME --tls --cafile "$ORDERER_CA $ORDERER2_CA" --ordererTLSHostnameOverride "orderer.example.com orderer2.example.com" 
+
+	res=$?
+	set +x
+	verifyResult $res "Generated config_block.pb" "Failed to generated config_block.pb"
+	
+	OUTPUT=${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}config.json
+
+	echo "Decoding config block to JSON and isolating config to ${OUTPUT}"
+	set -x
+	configtxlator proto_decode --input ${PWD}/channel-artifacts/config_block.pb --type common.Block --output ${PWD}/channel-artifacts/config_block.json
+	jq .data.data[0].payload.data.config ${PWD}/channel-artifacts/config_block.json > ${OUTPUT}
+	res=$?
+	set +x
+	verifyResult $res "Parsed Channel configuration successfully" "Failed to parse channel configuration, make sure you have jq installed"
+	# FetchChannelConfig Part till here
+	
+	# Takes an original and modified config, and produces the config update tx
+	echo "Generating anchor peer update tx file for Org on channel ${CHANNEL_NAME}"
+	
+	# Define your anchor peer HOST and PORT here
+	HOST="peer0.org1.example.com"
+	PORT=7051
+
+	set -x
+	# Modify the configuration to append the anchor peer
+	jq '.channel_group.groups.Application.groups.'${CORE_PEER_LOCALMSPID}'.values += {"AnchorPeers":{"mod_policy": "Admins","value":{"anchor_peers": [{"host": "'$HOST'","port": '$PORT'}]},"version": "0"}}' ${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}config.json > ${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}modified_config.json
+	res=$?
+	set +x
+	verifyResult $res "Channel configuration update for anchor peer PASSED" "Channel configuration update for anchor peer FAILED, make sure you have jq installed"
+
+	# createConfigUpdate Part
+	ORIGINAL=${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}config.json
+	MODIFIED=${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}modified_config.json
+	OUTPUT=${PWD}/channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx
+
+	echo "config.json to protobuf conversion"
+	set -x
+	configtxlator proto_encode --input "${ORIGINAL}" --type common.Config --output ${PWD}/channel-artifacts/original_config.pb
+	res=$?
+	set +x
+	verifyResult $res "Original config json converted to Protobuf" "Failed to convert json to Protobuf"
+
+	echo "modified_config.json to protobuf conversion"
+	set -x
+	configtxlator proto_encode --input "${MODIFIED}" --type common.Config --output ${PWD}/channel-artifacts/modified_config.pb
+	res=$?
+	set +x
+	verifyResult $res "Modified config.json converted to Protobuf" "Failed to convert json to Protobuf"
+
+	echo "Computing the difference between Original Protobuf with Modified Protobuf"
+	set -x
+	configtxlator compute_update --channel_id $CHANNEL_NAME --original ${PWD}/channel-artifacts/original_config.pb --updated ${PWD}/channel-artifacts/modified_config.pb --output ${PWD}/channel-artifacts/config_update.pb
+	res=$?
+	set +x
+	verifyResult $res "Generated new config_update protobuf file" "Failed to generated new config_update protobuf file"
+
+	echo "Converting config_update protobuf file to JSON format"
+	set -x 
+	configtxlator proto_decode --input ${PWD}/channel-artifacts/config_update.pb --type common.ConfigUpdate --output ${PWD}/channel-artifacts/config_update.json
+	res=$?
+	set +x
+	verifyResult $res "Converted config_update protobuf to json format" "Failed to convert protobuf to json format"
+
+	echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL_NAME'", "type":2}},"data":{"config_update":'$(cat ${PWD}/channel-artifacts/config_update.json)'}}}' | jq . > ${PWD}/channel-artifacts/config_update_in_envelope.json
+
+	echo "Generating orgMSP anchor tx file"
+	set -x
+	configtxlator proto_encode --input ${PWD}/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output "${OUTPUT}"
+	res=$?
+	set +x
+	verifyResult $res "Generated orgMSP anchor tx file" "Failed to generate orgMSP anchor tx file"
+ 
+	echo "--- Creating org anchor peer update for ${CHANNEL_NAME} (NEW) DONE SUCCESSFULLY ---"
+}
+
+# update channel to add Anchor Peer
+updateNewAnchorPeers() {
+	displayMsg "--- Defining Orgs Anchor Peer for channel - ${CHANNEL_NAME} (NEW) ---"
 
 	# for Org1 setting MSPID
 	export CORE_PEER_LOCALMSPID="Org1MSP"
+	export CORE_PEER_MSPCONFIGPATH=${PWD}/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+	export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
+	export CORE_PEER_ADDRESS=localhost:7051
+
 	local rc=1
 	local COUNTER=0
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
@@ -182,7 +266,7 @@ updateAnchorPeers() {
 			sleep 2
 		fi
 		set -x
-		peer channel update -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&./logs/anchorPeer-channel-log.txt
+		peer channel update -o localhost:7050 -c $CHANNEL_NAME -f ./channel-artifacts/${CORE_PEER_LOCALMSPID}anchors.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA --ordererTLSHostnameOverride "orderer.example.com" >&./logs/anchorPeer-channel-log.txt
 		res=$?
 		set +x
 		rc=$res
@@ -193,27 +277,22 @@ updateAnchorPeers() {
 }
 
 export FABRIC_CFG_PATH=${PWD}/configtx
+echo "### Creating Channel - ${CHANNEL_NAME} Genesis Block ###"
+createChannelGenesisBlock
 
-## Create channeltx
-echo "### Generating channel create transaction '${CHANNEL_NAME}.tx' ###"
-createChannelTxn
-
-## Create anchorpeertx
-echo "### Generating anchor peer update transactions ###"
-createAncorPeerTxn
+echo "### Creating new channel - ${CHANNEL_NAME} ###"
+createNewChannel
 
 export FABRIC_CFG_PATH=$PWD/../config/
+echo "### Join org peer to the channel - ${CHANNEL_NAME} ###"
+joinNewChannel
 
-## Create channel
-createChannel
+## Use these anchor peer functions if you want to update anchor peer other than mentioned in configtx.yaml file
+# echo "### Creating Anchor Peer txn for channel - ${CHANNEL_NAME} ###"
+# createNewAncorPeerUpdate
 
-## Join all the peers to the channel
-echo "Join Org peers to the channel..."
-joinChannel
-
-## Set the anchor peers for each org in the channel
-echo "Updating anchor peers for org..."
-updateAnchorPeers
+# echo "### Updating channel - ${CHANNEL_NAME} for anchor peers ###"
+# updateNewAnchorPeers
 
 echo
 echo "========= Fabric Network Channel $CHANNEL_NAME successfully created =========== "

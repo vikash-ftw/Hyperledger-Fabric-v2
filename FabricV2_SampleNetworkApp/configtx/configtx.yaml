@@ -289,7 +289,7 @@ Channel: &ChannelDefaults
 #
 ################################################################################
 Profiles:
-  SampleAppOrdererGenesis:
+  ChannelUsingRaft:
     <<: *ChannelDefaults
     Orderer:
       <<: *OrdererDefaults
@@ -297,13 +297,6 @@ Profiles:
         - *OrdererOrg
       Capabilities:
         <<: *OrdererCapabilities
-    Consortiums:
-      SampleConsortium:
-        Organizations:
-          - *Org1
-  SampleChannel:
-    Consortium: SampleConsortium
-    <<: *ChannelDefaults
     Application:
       <<: *ApplicationDefaults
       Organizations:
