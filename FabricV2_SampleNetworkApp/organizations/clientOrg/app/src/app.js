@@ -71,7 +71,7 @@ app.use((err, req, res, next) => {
     });
   } else {
     // Handle other errors (e.g., server errors)
-    logger.info("** Critical Unknown Error **");
+    console.info("** Critical Unknown Error **");
     res.status(500).json({
       statusCode: 500,
       success: false,
