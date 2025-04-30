@@ -377,6 +377,66 @@ const queryOnProductName = asyncHandler(async (req, res) => {
   }
 });
 
+// Controller to perform query on Product Owner with Pagination
+const queryOnProductOwnerWithPagination = asyncHandler(async(req, res) => {
+  console.log(`${BLUE}--- Controller: queryOnProductOwnerWithPagination called ---${RESET}`);
+  const { productOwnerName, pageSize, bookmark } = req.body;
+  console.log(`Req Params: ${productOwnerName}, ${pageSize}, ${bookmark}`);
+
+  if (!(productOwnerName && productOwnerName?.trim() != "")) {
+    throw new ApiError(400, "Invalid productOwnerName argument!");
+  }
+  // check pageSize is valid argument and then change pageSize to number
+  let pageSizeCount;
+  if (pageSize && pageSize > 0) {
+    pageSizeCount = parseInt(pageSize) || 10;
+  } else {
+    throw new ApiError(400, "Invalid pageSize argument!");
+  } 
+  // check bookmark is valid argument
+  if(typeof bookmark !== "string") {
+    throw new ApiError(400, "Invalid bookmark argument!");
+  }
+
+  // creating the selectorQueryString object required by chaincode
+  const selectorQuery = { productOwnerName };
+  if (typeof selectorQuery != "object" || Array.isArray(selectorQuery)) {
+    throw new ApiError(500, "selectorQuery parameter is not a valid JSON!");
+  }
+  const selectorQueryString = JSON.stringify(selectorQuery);
+
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  try {
+    const instance = await initiateConnection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    const network = await instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    const queryPayload = [ selectorQueryString, pageSizeCount, bookmark ];
+    console.log(`Data Fetch Query with Pagination - Query: ${selectorQueryString}, pageSize: ${pageSizeCount}, bookmark: ${bookmark}`);
+    
+    const result = await contract.evaluateTransaction(
+      "queryProductDataByPagination", ...queryPayload
+    );
+    console.log(`-- Query with Pagination Completed --`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          JSON.parse(result),
+          "Product Paginated Query Data Fetched Successfully"
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, `Chaincode Error: ${error.message}`);
+  }
+});
+
 // Controller to fetch history for a UUID key
 const getTransactionHistory = asyncHandler(async (req, res) => {
   console.info(
@@ -447,6 +507,181 @@ function extractMessage(errorString) {
   return message;
 }
 
+// Controller to add Product with Composite Key
+const addProductWithCompositeKey = asyncHandler(async (req, res) => {
+  console.log(`${BLUE}--- Controller: addProductWithCompositeKey called ---${RESET}`);
+  const { productNumber, productManufacturer, productName, productOwnerName } =
+    req.body;
+
+  if (
+    !(productNumber && productManufacturer && productName && productOwnerName)
+  ) {
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+
+  if (
+    [productNumber, productManufacturer, productName, productOwnerName].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
+    throw new ApiError(400, "Invalid value in request parameters!");
+  }
+
+  const orgMSP = process.env.Org1MSP;
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  // variables declaration
+  let network;
+  let listener;
+  try {
+    const instance = await initiateConnection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    network = await instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    // fetching endorsing peers
+    const peers = network.getChannel().getEndorsers(orgMSP);
+    console.log(`Endorsing Peers : ${peers}`);
+
+    // set commit listener
+    listener = commitListener;
+
+    console.log("-- Initiating Transaction... --");
+    // create a transaction
+    const transaction = contract.createTransaction("addProductDataWithCompositeKey");
+    // get transaction Id
+    const DLT_txnId = transaction.getTransactionId();
+    console.log(`DLT Txn Id - ${DLT_txnId}`);
+
+    // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
+    network.addCommitListener(listener, peers.slice(0, 1), DLT_txnId);
+
+    // Data payload
+    const payload = [
+      productNumber,
+      productManufacturer,
+      productName,
+      productOwnerName,
+    ];
+
+    console.log(`Data Payload : ${payload}`);
+
+    // now submit the transaction with required args
+    const bufferResp = await transaction.submit(...payload);
+
+    console.log(`${GREEN}** Transaction Committed **${RESET}`);
+    console.log(`Buffer Response - ${bufferResp.toString()}`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { DLT_txnId: DLT_txnId },
+      "Product with Composite Key Added Successfully"
+        )
+      );
+  } catch (error) {
+    let errorMessage = extractMessage(error.message);
+    if (errorMessage.includes("already exist!")) {
+      throw new ApiError(400, errorMessage);
+    }
+    throw new ApiError(500, `Chaincode Error - ${error.message}`);
+  } finally {
+    network.removeCommitListener(listener);
+    console.log(`${BLUE}-- Removed Commit Listener --${RESET}`);
+  }
+});
+
+// Controller to Query Data with Partial Composite Key
+const queryOnProductWithPartialCompositeKey = asyncHandler(async (req, res) => {
+  console.log(`${BLUE}--- Controller: queryOnProductWithPartialCompositeKey called ---${RESET}`);
+  const { keyName, attributes} = req.body;
+
+  if (!(keyName && keyName?.trim() != "")) {
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+  if (!(attributes && Array.isArray(attributes))) {
+    throw new ApiError(400, "Invalid value in 'attributes' parameter!");
+  }
+
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  try {
+    const instance = await initiateConnection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    const network = await instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    console.log(`Partial Composite Key Fetch Query - keyName: ${keyName}, attributes: ${attributes}`);
+    const result = await contract.evaluateTransaction(
+      "getProductDataByPartialCompositeKey",
+      keyName,
+      attributes
+    );
+    console.log(`-- Partial Composite Key Data Query Completed --`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          JSON.parse(result),
+          "Product Query Data on Partial Composite Key is Fetched Successfully"
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, `Chaincode Error: ${error.message}`);
+  }
+});
+
+const queryOnProductByKeyRange = asyncHandler(async (req,res) => {
+  console.log(`${BLUE}--- Controller: queryonProductByKeyRange called ---${RESET}`);
+  const { startKey, endKey } = req.body;
+
+  if (!(startKey && startKey?.trim() != "")) {
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+  if (!(endKey && endKey?.trim() != "")) {
+    throw new ApiError(400, "Invalid request parameters!");
+  }
+
+  const channelName = process.env.CHANNEL_NAME;
+  const chaincodeName = process.env.CHAINCODE_NAME;
+
+  try {
+    const instance = await initiateConnection();
+    console.log(`-- Fetching Channel - ${channelName} --`);
+    const network = await instance.getNetwork(channelName);
+    console.log(`-- Fetching Contract - ${chaincodeName} --`);
+    const contract = network.getContract(chaincodeName);
+
+    console.log(`Query on Product by Key Range - startKey: ${startKey}, endKey: ${endKey}`);
+    const result = await contract.evaluateTransaction(
+      "getProductDataByRange",
+      startKey,
+      endKey
+    );
+    console.log(`-- Query on Product by Key Range Completed --`);
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          JSON.parse(result),
+          "Product Query Data on Key Range is Fetched Successfully"
+        )
+      );
+  } catch (error) {
+    console.log(error);
+    throw new ApiError(500, `Chaincode Error: ${error.message}`);
+  }
+});
+
+
 export {
   addProduct,
   getProductById,
@@ -454,5 +689,9 @@ export {
   updateProductOwner,
   queryOnProductOwner,
   queryOnProductName,
+  queryOnProductOwnerWithPagination,
   getTransactionHistory,
+  addProductWithCompositeKey,
+  queryOnProductWithPartialCompositeKey,
+  queryOnProductByKeyRange
 };

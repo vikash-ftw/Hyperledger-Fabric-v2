@@ -169,6 +169,62 @@ class FabricLedgerContract extends Contract {
     }
   }
 
+  // Fetch an asset by Rich-Query with Pagination (only supported in couchDB)
+  async queryProductDataByPagination(ctx, selectorQueryString, pageSize, bookmark) {
+    console.info(
+      "============= START: Performing Query on Product Asset with Pagination Support ============="
+    );
+    // Parse the selectorQueryString to JSON object
+    const selectorQuery = JSON.parse(selectorQueryString);
+
+    // Here selectorQuery Must be a JSON Object for ex:- {queryField : FieldValue}
+    if (typeof selectorQuery != "object" || Array.isArray(selectorQuery)) {
+      throw new Error("selectorQuery parameter is not a valid JSON!");
+    }
+    // Check if pageSize is a number and greater than 0
+    if (isNaN(pageSize) || pageSize <= 0) {
+      throw new Error("pageSize parameter is not a valid number!");
+    }
+    // Check if bookmark is a string
+    if (typeof bookmark !== "string") {
+      throw new Error("bookmark parameter is not a valid string!");
+    }
+    const query = {
+      selector: selectorQuery,
+    };
+    console.info(`**-- Query: ${query}, PageSize: ${pageSize}, Bookmark: ${bookmark} --**`);
+    
+    // getQueryResultWithPagination() returns 'PaginationQueryResponse' object which contains iterator and metadata
+    const paginationQueryResponse = await ctx.stub.getQueryResultWithPagination(JSON.stringify(query), pageSize, bookmark);
+    const resultData = {};
+    const resultedDataList = [];
+    const iterator = paginationQueryResponse.iterator;
+    while (true) {
+      const res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        console.info(res.value.value.toString("utf8"));
+
+        const Key = res.value.key;
+        let Record;
+        try {
+          Record = JSON.parse(res.value.value.toString("utf8"));
+        } catch (error) {
+          console.error(`-- Error - ${error} --`);
+          Record = res.value.value.toString("utf8");
+        }
+        resultedDataList.push({ Key, Record });
+      }
+      if (res.done) {
+        console.info("-- End of QueryResultWithPagination data --");
+        await iterator.close();
+        resultData.fetchedRecords = resultedDataList;
+        resultData.metadata = paginationQueryResponse.metadata;
+        return JSON.stringify(resultData);
+      }
+    }
+  }
+
   // Fetch the history for key
   async getHistoryForKey(ctx, key) {
     console.info("============= START: getHistoryForKey =============");
@@ -197,6 +253,111 @@ class FabricLedgerContract extends Contract {
       }
     }
   }
+
+  // Composite Key based data
+  async addProductDataWithCompositeKey(ctx, productNumber, productManufacturer, productName, productOwnerName) {
+    console.info("============= START : addProductDataWithCompositeKey =============");
+    
+    // create composite key
+    const compositeKey = ctx.stub.createCompositeKey("ProductOwnership", [productNumber, productOwnerName]);
+    console.info(`-- CompositeKey : ${compositeKey} --`);
+
+    const timestamp = ctx.stub.getDateTimestamp();
+    const product = {
+      productNumber,
+      productManufacturer,
+      productName,
+      productOwnerName,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    };
+
+    // JSON obj stringify
+    const assetJSON = JSON.stringify(product);
+    console.info(`--- asset : ${assetJSON} ---`);
+    // create Buffer
+    const assetBuffer = Buffer.from(assetJSON);
+    // add event
+    ctx.stub.setEvent("addProductDataCompositeKeyEvent", assetBuffer);
+    // perform txn
+    await ctx.stub.putState(compositeKey, assetBuffer);
+    console.info("-- Performed Context Txn --");
+    return assetJSON;
+  }
+
+  // Partial Composite Key based State Data Query
+  async getProductDataByPartialCompositeKey(ctx, objectType, attributes) {
+    console.info(
+      "============= START: Performing Query on Product Asset with Composite Key ============="
+    );
+
+    // Check if attributes is a string, if its string then convert it to an array
+    if(typeof attributes === "string") {
+      // convert string to array
+      attributes = [attributes];
+    }
+    console.info(`Partial Composite Key - ObjectType: ${objectType}, Attributes: ${attributes}`);
+    
+    // Query the state in ledger based on given partial composite key
+    const iterator = await ctx.stub.getStateByPartialCompositeKey(objectType, attributes);
+    const allResults = [];
+    while (true) {
+      const res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        console.info(res.value.value.toString("utf8"));
+
+        const Key = res.value.key;
+        let Record;
+        try {
+          Record = JSON.parse(res.value.value.toString("utf8"));
+        } catch (error) {
+          console.error(`-- Error - ${error} --`);
+          Record = res.value.value.toString("utf8");
+        }
+        allResults.push({ Key, Record });
+      }
+      if (res.done) {
+        console.info("-- End of QueryResult data --");
+        await iterator.close();
+        return JSON.stringify(allResults);
+      }
+    }
+  }
+
+  // Get the data b/w startKey and endKey
+  async getProductDataByRange(ctx, startKey, endKey) {
+    console.info(
+      "============= START: Performing Query on Product Asset by Range ============="
+    );
+    console.log(`-- startKey: ${startKey}, endKey: ${endKey} --`);
+    
+    const iterator = await ctx.stub.getStateByRange(startKey, endKey);
+    const allResults = [];
+    while (true) {
+      const res = await iterator.next();
+
+      if (res.value && res.value.value.toString()) {
+        console.info(res.value.value.toString("utf8"));
+
+        const Key = res.value.key;
+        let Record;
+        try {
+          Record = JSON.parse(res.value.value.toString("utf8"));
+        } catch (error) {
+          console.error(`-- Error - ${error} --`);
+          Record = res.value.value.toString("utf8");
+        }
+        allResults.push({ Key, Record });
+      }
+      if (res.done) {
+        console.info("-- End of QueryResult data --");
+        await iterator.close();
+        return JSON.stringify(allResults);
+      }
+    }
+  }
+
 }
 
 module.exports = FabricLedgerContract;
