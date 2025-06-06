@@ -5,6 +5,20 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { commitListener } from "../utils/commitListener.js";
+import { blockListener } from "../utils/blockListener.js";
+
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Convert the current module's URL to a file path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const configPath = path.resolve(__dirname, '../../nextblock.txt');
+import { nextBlock, processPendingBlocks } from "../utils/blockProcessing.js";
+import { ProcessingMap } from "../utils/blockMap.js";
+import { nanoServer } from "../utils/offChainConnectionHandler.js";
 
 // Color codes for console logging
 const RED = "\x1b[31m\n";
@@ -37,7 +51,6 @@ const addProduct = asyncHandler(async (req, res) => {
 
   // variables declaration
   let network;
-  let listener;
   try {
     const instance = await initiateConnection();
     console.log(`-- Fetching Channel - ${channelName} --`);
@@ -47,10 +60,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
     // fetching endorsing peers
     const peers = network.getChannel().getEndorsers(orgMSP);
-    console.log(`Endorsing Peers : ${peers}`);
-
-    // set commit listener
-    listener = commitListener;
+    // console.log(`Endorsing Peers : ${peers}`);
 
     console.log("-- Initiating Transaction... --");
     // create a transaction
@@ -60,7 +70,7 @@ const addProduct = asyncHandler(async (req, res) => {
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
     // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
-    network.addCommitListener(listener, peers.slice(0, 1), DLT_txnId);
+    await network.addCommitListener(commitListener, peers.slice(0, 1), DLT_txnId);
 
     // Data payload
     const payload = [
@@ -74,6 +84,25 @@ const addProduct = asyncHandler(async (req, res) => {
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
+
+    try {
+      // get offchaindb connection and check if its working
+      const dbInfo = await nanoServer.info();
+      // console.log(`dbInfo: ${JSON.stringify(dbInfo)}`);
+
+      // if db connection successfull then only perform Block Event tasks
+      if(dbInfo) {
+        // attach blockListener - pass blockListener and set the starting block for the listener
+        await network.addBlockListener(blockListener, {filtered: false, startBlock: parseInt(nextBlock, 10)});
+        // now performing block processing
+        console.log(`Listening for block events, nextblock: ${nextBlock}`);
+        // start processing, looking for entries in the ProcessingMap
+        await processPendingBlocks(configPath, ProcessingMap, nanoServer);
+      }
+    } catch (err) {
+      console.log(`** -- Error in Block Events Listening: ${err} -- **`);
+      console.log(`${RED}*** --> Currently OffChain is OUT OF SYNC <-- ***${RESET}`);
+    }
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
@@ -93,8 +122,11 @@ const addProduct = asyncHandler(async (req, res) => {
     }
     throw new ApiError(500, `Chaincode Error - ${error.message}`);
   } finally {
-    network.removeCommitListener(listener);
+    network.removeCommitListener(commitListener);
     console.log(`${BLUE}-- Removed Commit Listener --${RESET}`);
+    // this is not working currently
+    // network.removeBlockListener(blockListener);
+    // console.log(`${BLUE}-- Removed Block Listener --${RESET}`);
   }
 });
 
@@ -147,8 +179,6 @@ const deleteProductById = asyncHandler(async (req, res) => {
 
   // variables declaration
   let network;
-  let listener;
-
   try {
     const instance = await initiateConnection();
     console.log(`-- Fetching Channel - ${channelName} --`);
@@ -158,10 +188,7 @@ const deleteProductById = asyncHandler(async (req, res) => {
 
     // fetching endorsing peers - (fetching only first 2 endorsing peers)
     const peers = network.getChannel().getEndorsers(orgMSP);
-    console.log(`Endorsing Peers : ${peers}`);
-
-    // set commit listener
-    listener = commitListener;
+    // console.log(`Endorsing Peers : ${peers}`);
 
     console.log("-- Initiating Transaction.. --");
 
@@ -171,8 +198,8 @@ const deleteProductById = asyncHandler(async (req, res) => {
     const DLT_txnId = transaction.getTransactionId();
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
-    // attach commitListener
-    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
+    // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
+    await network.addCommitListener(commitListener, peers.slice(0, 1), DLT_txnId);
 
     console.log(`Data Payload : ${productNumber}`);
 
@@ -197,6 +224,9 @@ const deleteProductById = asyncHandler(async (req, res) => {
       throw new ApiError(400, errorMessage);
     }
     throw new ApiError(500, `Chaincode Error: ${error.message}`);
+  } finally {
+    network.removeCommitListener(commitListener);
+    console.log(`${BLUE}-- Removed Commit Listener --${RESET}`);
   }
 });
 
@@ -221,8 +251,6 @@ const updateProductOwner = asyncHandler(async (req, res) => {
 
   // variables declaration
   let network;
-  let listener;
-
   try {
     const instance = await initiateConnection();
     console.log(`-- Fetching Channel - ${channelName} --`);
@@ -232,10 +260,7 @@ const updateProductOwner = asyncHandler(async (req, res) => {
 
     // fetching endorsing peers - (fetching only first 2 endorsing peers)
     const peers = network.getChannel().getEndorsers(orgMSP);
-    console.log(`Endorsing Peers : ${peers}`);
-
-    // set commit listener
-    listener = commitListener;
+    // console.log(`Endorsing Peers : ${peers}`);
 
     console.log("-- Initiating Transaction.. --");
 
@@ -245,8 +270,8 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     const DLT_txnId = transaction.getTransactionId();
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
-    // attach commitListener
-    await network.addCommitListener(listener, peers.slice(0, 2), DLT_txnId);
+    // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
+    await network.addCommitListener(commitListener, peers.slice(0, 1), DLT_txnId);
 
     // payload
     const payload = [productNumber, oldOwnerName, newOwnerName];
@@ -278,7 +303,7 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     }
     throw new ApiError(500, `Chaincode Error: ${error.message}`);
   } finally {
-    network.removeCommitListener(listener);
+    network.removeCommitListener(commitListener);
     console.log(`${BLUE}-- Removed Commit Listener --${RESET}`);
   }
 });
@@ -533,7 +558,6 @@ const addProductWithCompositeKey = asyncHandler(async (req, res) => {
 
   // variables declaration
   let network;
-  let listener;
   try {
     const instance = await initiateConnection();
     console.log(`-- Fetching Channel - ${channelName} --`);
@@ -543,12 +567,10 @@ const addProductWithCompositeKey = asyncHandler(async (req, res) => {
 
     // fetching endorsing peers
     const peers = network.getChannel().getEndorsers(orgMSP);
-    console.log(`Endorsing Peers : ${peers}`);
-
-    // set commit listener
-    listener = commitListener;
+    // console.log(`Endorsing Peers : ${peers}`);
 
     console.log("-- Initiating Transaction... --");
+
     // create a transaction
     const transaction = contract.createTransaction("addProductDataWithCompositeKey");
     // get transaction Id
@@ -556,7 +578,7 @@ const addProductWithCompositeKey = asyncHandler(async (req, res) => {
     console.log(`DLT Txn Id - ${DLT_txnId}`);
 
     // attach commitListener - (listening on one random endorsing peers therefore using peers.slice(0,1))
-    network.addCommitListener(listener, peers.slice(0, 1), DLT_txnId);
+    await network.addCommitListener(commitListener, peers.slice(0, 1), DLT_txnId);
 
     // Data payload
     const payload = [
@@ -589,7 +611,7 @@ const addProductWithCompositeKey = asyncHandler(async (req, res) => {
     }
     throw new ApiError(500, `Chaincode Error - ${error.message}`);
   } finally {
-    network.removeCommitListener(listener);
+    network.removeCommitListener(commitListener);
     console.log(`${BLUE}-- Removed Commit Listener --${RESET}`);
   }
 });

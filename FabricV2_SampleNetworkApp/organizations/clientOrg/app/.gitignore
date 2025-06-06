@@ -5,3 +5,9 @@ node_modules/
 identity/
 
 package-lock.json
+
+# ignore .txt files
+*.txt
+
+# ignore .log files
+*.log

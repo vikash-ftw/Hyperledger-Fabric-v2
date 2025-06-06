@@ -9,12 +9,13 @@ const commitListener = (err, event) => {
   if (err) {
     console.log(`${RED}-- Peer Communication Error in CommitEvents --${RESET}`);
     console.log(`${RED}-- Error:(CommitEvents Error) - ${err} --${RESET}`);
+    return;
   } else {
     console.log(
       `${GREEN}**-- Endorser Peer -> Name: ${event.peer.name} --**${RESET}`
     );
     const contractEvents = event.getContractEvents();
-    console.log(`Contract Events =  ${JSON.stringify(contractEvents)}`);
+    // console.log(`Contract Events =  ${JSON.stringify(contractEvents)}`);
     const contractEvent = contractEvents[0];
     console.log(`Current Contract Event = ${JSON.stringify(contractEvent)}`);
     const txnEvent = contractEvent.getTransactionEvent();
