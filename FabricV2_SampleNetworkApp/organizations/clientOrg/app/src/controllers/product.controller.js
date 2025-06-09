@@ -5,20 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { commitListener } from "../utils/commitListener.js";
-import { blockListener } from "../utils/blockListener.js";
-
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-// Convert the current module's URL to a file path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const configPath = path.resolve(__dirname, '../../nextblock.txt');
-import { nextBlock, processPendingBlocks } from "../utils/blockProcessing.js";
-import { ProcessingMap } from "../utils/blockMap.js";
-import { nanoServer } from "../utils/offChainConnectionHandler.js";
+import { handleTxnBlockEvent } from "../utils/offChainTxnBlockHandler.js";
 
 // Color codes for console logging
 const RED = "\x1b[31m\n";
@@ -84,25 +71,9 @@ const addProduct = asyncHandler(async (req, res) => {
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
-
-    try {
-      // get offchaindb connection and check if its working
-      const dbInfo = await nanoServer.info();
-      // console.log(`dbInfo: ${JSON.stringify(dbInfo)}`);
-
-      // if db connection successfull then only perform Block Event tasks
-      if(dbInfo) {
-        // attach blockListener - pass blockListener and set the starting block for the listener
-        await network.addBlockListener(blockListener, {filtered: false, startBlock: parseInt(nextBlock, 10)});
-        // now performing block processing
-        console.log(`Listening for block events, nextblock: ${nextBlock}`);
-        // start processing, looking for entries in the ProcessingMap
-        await processPendingBlocks(configPath, ProcessingMap, nanoServer);
-      }
-    } catch (err) {
-      console.log(`** -- Error in Block Events Listening: ${err} -- **`);
-      console.log(`${RED}*** --> Currently OffChain is OUT OF SYNC <-- ***${RESET}`);
-    }
+    
+    // now handle block events for OffChain Data Sync
+    await handleTxnBlockEvent(network);
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
@@ -206,6 +177,9 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
 
+    // now handle block events for OffChain Data Sync
+    await handleTxnBlockEvent(network);
+
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
     console.log("**** Product Deleted ****");
@@ -280,6 +254,9 @@ const updateProductOwner = asyncHandler(async (req, res) => {
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
+
+    // now handle block events for OffChain Data Sync
+    await handleTxnBlockEvent(network);
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
