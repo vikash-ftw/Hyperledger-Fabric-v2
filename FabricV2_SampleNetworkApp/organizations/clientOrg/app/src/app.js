@@ -35,15 +35,8 @@ const register = async () => {
   }
 };
 
-import { initializeBlock } from "./utils/blockProcessing.js";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-// Convert the current module's URL to a file path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// import OffChain initialize function to use OffChain
+import { initiateNextBlockFile } from "./utils/offChainTxnBlockHandler.js";
 
 const startServer = async () => {
   try {
@@ -54,11 +47,13 @@ const startServer = async () => {
     console.log("** Gateway Connection Established **");
     console.log("instance connection: " + instance);
 
-    // initialize blockProcessing txt file
-    console.log("Initializing blockProcessing txt file for blockProcessing tasks");
-    const configPath = path.resolve(__dirname, '../nextblock.txt');
-    await initializeBlock(configPath);
-    console.log(`Initialized successfully at Path: ${configPath}`);
+    // use OffChain
+    const allow_offchain = process.env.ALLOW_OFFCHAIN_SYNC.toLowerCase();
+    console.log(`***---- Allow OffChain Data Sync: ${allow_offchain} ----***`);
+    if(allow_offchain === "true") {
+      // initializing OffChain
+      await initiateNextBlockFile();
+    }
     
     app.listen(port, () => {
       console.log(`Server is listening at port- ${port}`);

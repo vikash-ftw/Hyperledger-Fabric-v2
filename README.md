@@ -68,8 +68,8 @@
 
 12. Now go to './organizations/clientOrg/app' directory for all the application related task
 
-    - Run _npm install_ (Node version must be v20.14)
-    - Now Run _npm run start_ (start our node server)
+    - Run => _npm install_ (Node version must be v20.14)
+    - Now Run => _npm run start_ (start our node server)
     - If all goes well without any error while server start then check out -
     - Check out './organizations/clientOrg/app/identity' directory containing wallet identities for admin and user. (Generated identities for our client app)
     - Newly created user identity generated via fabric CA will now be used to invoke chaincode on our network.
@@ -128,5 +128,18 @@
 
      - So delete these two volumes by running 'docker volume rm' command available in docker. **(Only delete if you faced error in running Explorer service)**
      - Now recreate the explorer container as mentioned in step - 4.
+
+### **-- Use OffChain Data Sync --**
+
+> :memo: **Note:** Currently OffChain is implemented using CouchDB as a OffChain DB. So u need to run this new OffChain CouchDB service.
+
+1. If you are using CouchDB as OffChain DB then run this docker container command and run a local couchDB instance separately. Run this => _docker run --publish 5990:5984 -v /usr/offchaindb/:/opt/couchdb/data --detach --name offchaindb couchdb:2.3.1_ . Your OffChain CouchDB will run at port '5990'.
+
+2. Now go to this .env file in application folder at 'FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env'. And set or change the environment variable 'ALLOW_OFFCHAIN_SYNC' to true.
+
+3. (OPTIONAL) If you running or managing your own CouchDB instance instead of following step 1. Then also set the environment variable 'COUCHDB_ADDRESS' to your instance Ip and port mapped correctly in same .env file mentioned in previous step.
+
+4. Now when you run the application node server as mentioned in previous guide to start network, then you will notice a text file will be generated with name _nextblock.txt_ at 'FabricV2_SampleNetworkApp/organizations/clientOrg/app/nextblock.txt' path. Now this text file will hold the block number to be processed in the next upcoming transaction in the network to facilitate syncing of OnChain data to the OffChain Data source. So initially in the fresh network it will be set to '0'.
+
 
 **Please Star ⭐ This Repository.**

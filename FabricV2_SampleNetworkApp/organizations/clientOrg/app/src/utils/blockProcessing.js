@@ -2,10 +2,8 @@
 import fs from "fs";
 import couchdbutil from "./couchdbutil.js";
 
-const channelid = process.env.CHANNELID;
-const peer_name = process.env.PEER_NAME;
-const use_couchdb = process.env.USE_COUCHDB;
-const couchdb_address = process.env.COUCHDB_ADDRESS;
+const channelid = process.env.CHANNEL_NAME;
+const use_couchdb = process.env.USE_COUCHDB.toLowerCase();
 
 // initialize the next block to be 0
 let nextBlock = 0;
@@ -100,7 +98,7 @@ const processBlockEvent = async function (configPath, channelname, block, use_co
                         // fs.appendFileSync(channelname + '_' + chaincodeID + '.log', JSON.stringify(writeObject) + "\n");
 
                         // if couchdb is configured, then write to couchdb
-                        if (use_couchdb) {
+                        if (use_couchdb === "true") {
                             try {
                                 await writeValuesToCouchDBP(nano, channelname, writeObject);
                             } catch (error) {

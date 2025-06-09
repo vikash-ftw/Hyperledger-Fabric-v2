@@ -1,4 +1,5 @@
 import { blockListener } from "./blockListener.js";
+import { initializeBlock } from "./blockProcessing.js";
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -17,6 +18,13 @@ const RED = "\x1b[31m\n";
 const GREEN = "\x1b[32m\n";
 const BLUE = "\x1b[34m";
 const RESET = "\x1b[0m";
+
+const initiateNextBlockFile = async() => {
+    // initialize blockProcessing txt file
+    console.log("Initializing blockProcessing txt file for blockProcessing tasks");
+    await initializeBlock(configPath);
+    console.log(`Initialized successfully at Path: ${configPath}`);
+}
 
 const handleTxnBlockEvent = async(network) => {
     try {
@@ -41,4 +49,4 @@ const handleTxnBlockEvent = async(network) => {
     }
 }
 
-export {handleTxnBlockEvent};
+export {initiateNextBlockFile, handleTxnBlockEvent};

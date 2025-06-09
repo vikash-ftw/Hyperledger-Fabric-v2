@@ -13,6 +13,9 @@ const GREEN = "\x1b[32m\n";
 const BLUE = "\x1b[34m";
 const RESET = "\x1b[0m";
 
+// Env variable to allow OffChain Data Sync
+const allow_offchain = process.env.ALLOW_OFFCHAIN_SYNC.toLowerCase();
+
 const addProduct = asyncHandler(async (req, res) => {
   console.log(`${BLUE}--- Controller: addProduct called ---${RESET}`);
   const { productNumber, productManufacturer, productName, productOwnerName } =
@@ -72,8 +75,11 @@ const addProduct = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
     
-    // now handle block events for OffChain Data Sync
-    await handleTxnBlockEvent(network);
+    // check if offchain allowed
+    if(allow_offchain === "true") {
+      // now handle block events for OffChain Data Sync
+      await handleTxnBlockEvent(network);
+    }
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
@@ -177,8 +183,11 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
 
-    // now handle block events for OffChain Data Sync
-    await handleTxnBlockEvent(network);
+    // check if offchain allowed
+    if(allow_offchain === "true") {
+      // now handle block events for OffChain Data Sync
+      await handleTxnBlockEvent(network);
+    }
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
@@ -255,8 +264,11 @@ const updateProductOwner = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
 
-    // now handle block events for OffChain Data Sync
-    await handleTxnBlockEvent(network);
+    // check if offchain allowed
+    if(allow_offchain === "true") {
+      // now handle block events for OffChain Data Sync
+      await handleTxnBlockEvent(network);
+    }
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
