@@ -24,6 +24,6 @@
     "express": "^4.19.2",
     "fabric-ca-client": "^2.2.20",
     "fabric-network": "^2.2.20",
-    "nano": "^10.1.4"
+    "mongodb": "6.17.0"
   }
 }

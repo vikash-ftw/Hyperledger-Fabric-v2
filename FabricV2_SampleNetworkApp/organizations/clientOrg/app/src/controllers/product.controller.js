@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { commitListener } from "../utils/commitListener.js";
-import { handleTxnBlockEvent } from "../utils/offChainTxnBlockHandler.js";
 
 // Color codes for console logging
 const RED = "\x1b[31m\n";
@@ -75,12 +74,6 @@ const addProduct = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
     
-    // check if offchain allowed
-    if(allow_offchain === "true") {
-      // now handle block events for OffChain Data Sync
-      await handleTxnBlockEvent(network);
-    }
-
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
     res
@@ -183,12 +176,6 @@ const deleteProductById = asyncHandler(async (req, res) => {
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(productNumber);
 
-    // check if offchain allowed
-    if(allow_offchain === "true") {
-      // now handle block events for OffChain Data Sync
-      await handleTxnBlockEvent(network);
-    }
-
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);
     console.log("**** Product Deleted ****");
@@ -263,12 +250,6 @@ const updateProductOwner = asyncHandler(async (req, res) => {
 
     // now submit the transaction with required args
     const bufferResp = await transaction.submit(...payload);
-
-    // check if offchain allowed
-    if(allow_offchain === "true") {
-      // now handle block events for OffChain Data Sync
-      await handleTxnBlockEvent(network);
-    }
 
     console.log(`${GREEN}** Transaction Committed **${RESET}`);
     console.log(`Buffer Response - ${bufferResp.toString()}`);

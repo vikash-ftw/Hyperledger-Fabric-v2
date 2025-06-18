@@ -10,9 +10,13 @@ const RESET = "\x1b[0m";
 const blockListener = async(event) => {
     console.log("--> In Block Listener <--");
     try {
-        console.log(`${GREEN}***-- BlockListener:: Block Number: ${event.blockNumber.toString()} --***${RESET}`)
-        await ProcessingMap.set(event.blockNumber, event.blockData)
-        console.log(`${GREEN}***-- BlockListener:: Added block ${event.blockNumber} to ProcessingMap --***${RESET}`)
+        console.log(`${GREEN}***-- BlockListener:: Block Number: ${event.blockNumber.toString()} --***${RESET}`);
+
+        // here event.blockNumber is of type object
+        // so to process it safely we convert it to number type before storing it in ProcessingMap 
+        ProcessingMap.set(parseInt(event.blockNumber.toString()), event.blockData);
+        
+        console.log(`${GREEN}***-- BlockListener:: Added block ${event.blockNumber} to ProcessingMap --***${RESET}`);
     } catch(err) {
         console.error(`${RED}-- BlockListener Error:(BlockEvents Error) - ${err} --${RESET}`);
         return;

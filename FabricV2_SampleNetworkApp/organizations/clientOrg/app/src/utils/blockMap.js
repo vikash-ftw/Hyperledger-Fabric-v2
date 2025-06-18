@@ -1,22 +1,22 @@
 class BlockMap {
     constructor() {
-        this.list = [];
+        this.map = new Map();
     }
 
     get(key) {
-        key = parseInt(key,10).toString();
-        return this.list[`block${key}`];
+        return this.map.get(key);
     }
-    set(key,value) {
-        this.list[`block${key}`] = value;
+
+    set(key, value) {
+        this.map.set(key, value);
     }
+
     remove(key) {
-        key = parseInt(key, 10).toString();
-        delete this.list[`block${key}`];
+        this.map.delete(key);
     }
+
 }
 
-let ProcessingMap = new BlockMap();
-
-export {BlockMap};
-export {ProcessingMap};
+// Export a singleton instance like before
+// this class instance will handle block processing
+export const ProcessingMap = new BlockMap();
