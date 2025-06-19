@@ -117,6 +117,9 @@ If server start smoothly without showing any error then -
    - Check out `./organizations/clientOrg/app/identity` directory containing `wallet` identities for our `admin` and `user`. These are generated as identities for our client application.
    - This newly created user identity generated via `fabric CA` will now be used by out application to invoke chaincode.
    - Finally our client app is ready to handle request and invoke chaincode so now test the application.
+
+To access the CouchDB ledger UI on browser go to `http://localhost:5984/_utils/#` 
+
 ## Additional AddOn Features
 ### Hyperledger Explorer
 
@@ -127,13 +130,16 @@ Run this script from `FabricV2_SampleNetworkApp` directory -
 ```bash
 ./scripts/start_explorer.sh
 ```
+Now you can access the Explorer UI on browser with port **8080**.
+
+If facing any error in accessing Explorer UI then check the container logs of explorer via `docker logs <container_name/Id>` command, there are two explorer containers one for explorer database and another one for main explorer. So check the main explorer container with name `explorer.mynetwork.com` and image name `ghcr.io/hyperledger-labs/explorer`.
 
 ### On Chain to Off Chain Data Sync
 
 Syncing On Chain blocks data to Off Chain database for following below purpose -
 
 - Handle `complex queries`.
-- To create `analytics` and `statistical` dashboard therefore handle its `repeated query load` via Off Chain database. Therefore generating `less load on the On Chain ledger` and `enhancing its performance`.
+- To create `analytics` and `statistical` dashboard therefore handle its `repeated query load` via Off Chain database. This reduces the On Chain ledger network load.
 
 First Run the mongodb in a Dockerized way.
 
@@ -141,7 +147,11 @@ First Run the mongodb in a Dockerized way.
 docker run -d -p 27017:27017 -v /usr/mongo_offchaindb/:/data/db --name mongo_offchaindb mongo:8.0.10
 ```
 
-Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.  
+Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.
+
+Here MongoDB will run on the port **27017**. 
+
+To view the data on GUI then checkout Compass, download and install it on your OS - [MongoDB_Compass](https://www.mongodb.com/products/tools/compass)
 
 `In case if you running your own full non dockerized version of mongodb then edit OFFCHAIN_MONGODB_ADDRESS environment variable in same .env file.`
 
