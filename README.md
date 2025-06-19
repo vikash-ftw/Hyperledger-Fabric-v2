@@ -1,145 +1,164 @@
-## ---- Hyperledger Fabric 2.x versions list ----
+## Hyperledger Fabric 2.x versions list
 
 - Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
 
 - Check Hyperledger Fabric version 2.5 (currently in development) -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
 
-## ---- Fabric Architecture Overview ----
+## Fabric Architecture Overview
 
 ![Fabric_Architecture](./images/Fabric_arch.png)
 
-## ---- Steps to run Fabric V2 network ----
+## Steps to Run Fabric Network Locally
 
-### **-- Fresh Setup on New Machine --**
+#### Fresh Setup on Ubuntu Machine
 
-- Download or check the required dependencies from here -> [Dependencies](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
+- Download or check the required dependencies: [Dependencies](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
 
-1. Make sure to remove 'hyperledger' directory (if present) under '/var' directory on your system.
+1. Make sure to remove `hyperledger` directory (if present) under `/var` directory on your system.
 
-2. Run _./loadFabricDependencies.sh_ -> to install all fabric binaries of specific version in your cloned project repo.
+2. Run this script to install all fabric binaries of specific version mentioned in script.
 
-   - Check new folders created by above script -> bin, config and fabric-samples directory should be created.
+```bash
+./loadFabricDependencies.sh
+```
 
-3. (OPTIONAL - To tweak couchDB default configs) Check ledger state related configs in 'FabricV2_SampleNetworkApp/docker/docker-compose-couch.yaml' file.
-   - You can change CouchDB related configs in each _Peer_ defined for each _couchDB_ container. Just change environment values defined in _Peer_.
-   - For more info follow this doc - [doc_link](https://hyperledger-fabric.readthedocs.io/en/release-2.2/couchdb_as_state_database.html)
+   - Check new folders created by this script -> `bin` and `config` directories.
 
 > :memo: **Note:** We can generate certificates and cryptographic key pairs (crypto-materials) that authenticate and authorize entities on the network via cryptogen (For testing and development purpose) or Fabric CA (For Production purpose) - We will use Fabric CA in our case.
 
-> :memo: **Note:** From now on 'FabricV2_SampleNetworkApp' will be our project_home.
+> :memo: **Note:** From now onwards for all the below steps our `FabricV2_SampleNetworkApp` directory will be our `project_home` to follow further step.
 
-4. Run _./scripts/start_fabric-ca.sh_ from project_home -> to start fabric-ca containers needed for crypto-materials
+```bash
+cd FabricV2_SampleNetworkApp
+```
+
+3. Now we run this script from `project_home` to start fabric-ca containers needed for crypto-materials. 
+
+```bash
+./scripts/start_fabric-ca.sh
+```
 
    - Check new fabric ca containers will be up and running.
-   - Also check fabric-ca (volume directory for fabric-ca containers) created under ./organizations
+   - Also check fabric-ca (volume mapped data directory for fabric-ca containers) created under `organizations` directory.
 
-5. Run _./scripts/registerEnroll.sh_ from project_home -> to create crypto-materials for peers, orderers and other participating entities.
+4. Next we run this script from same `project_home` to create `crypto-materials` for peers, orderers and other participating entities.
 
-   - Check out ordererOrganizations and peerOrganizations folders under ./organizations directory containing all crypto-materials related to peers and orderers.
+```bash
+./scripts/registerEnroll.sh
+```
 
-6. Run _./organizations/ccp-generate.sh_ from project_home -> to create CCP(Common Connection Profile) files details under ./organizations/peerOrganizations directory
+   - Check out `ordererOrganizations` and `peerOrganizations` directories under `organizations` directory containing all crypto-materials related to our `peers` and `orderers`.
 
-   - Check out ./organizations/peerOrganizations/org1.example.com/connection-org1.json and connection-org1.yaml files created by script
+5. Next run this script to create `CCP(Common Connection Profile)`, this will be needed by application to connect with network.
 
-7. Run _./createFirstGenesisBlock.sh_ from project_home -> to create genesis block of our network
+```bash
+./organizations/ccp-generate.sh
+```
 
-   - Check out ./system-genesis-block folder created under project_home containing genesis.block file
+   - Check out `./organizations/peerOrganizations/org1.example.com/` directory having these two `connection-org1.json` and `connection-org1.yaml` files containing all connection details of our Peer nodes.
 
-8. Run _./scripts/start_network.sh_ from project_home -> to create and run our peers, orderers, couchDB and other network containers
+6. Next we create genesis block of our network.
 
-   - Check out new peers, orderers, couchDB and other network containers up and running
-   - Also check out /var/hyperledger/ folder (volume directory for all our peers, orderers and couchDB containers)
-   - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
+```bash
+./createFirstGenesisBlock.sh
+```
 
-9. Run _./scripts/createChannel.sh_ from project_home -> to create a channel related files and join peers to this newly created channel
+   - Check out `system-genesis-block` directory containing `genesis.block` file.
 
-   - Check out ./channel-artifacts directory containing 3 files :- anchor and channel related .tx files and also .block file
-   - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
+7. Now finally we start our network to build and run our `peers`, `orderers`, `couchDB` and other network containers.
 
-10. Run _./scripts/deploySmartContract.sh_ from project_home -> to package, install, approve, commit (New Lifecycle 4 step process) for chaincode deployment
+```bash
+./scripts/start_network.sh
+```
 
-    - Check out ./fabricLedgerContract.tar.gz (packaged chaincode file) created on 'project_home' directory
-    - Also check out new dev-peer containers up and running (chaincode containers) with their specific smartcontract version like 'v1', 'v2'. These containers will handle chaincode invocation requests
-    - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 20 seconds, then check the status of the containers.**
+   - Check out new peers, orderers, couchDB and other network containers building up and running.
+   - Also check out `/var/hyperledger` directory (volume mapped data directory for all our peers, orderers and couchDB containers)
+   - **Make sure none of the containers enters the 'Exited' state. Wait for approximately 5-8 seconds, then check the status of the containers.**
 
-11. (OPTIONAL - For Testing Chaincode invocation) Run _./scripts/invokeContract.sh_ from project_home -> to check if chaincode is working via 'peer chaincode invoke' command
+8. Now next we create our  network `channel` related files and join peers to this newly created channel.
 
-    - Check if invoked transaction is committed or failed - if successfully committed then chaincode is fine and ready to handle request made via application endpoint
+```bash
+./scripts/createChannel.sh
+```
 
-12. Now go to './organizations/clientOrg/app' directory for all the application related task
+   - Check out `channel-artifacts` directory containing 3 files : `anchor` and `channel` related `.tx` files and also `.block` file of channel.
 
-    - Run => _npm install_ (Node version must be v20.14)
-    - Now Run => _npm run start_ (start our node server)
-    - If all goes well without any error while server start then check out -
-    - Check out './organizations/clientOrg/app/identity' directory containing wallet identities for admin and user. (Generated identities for our client app)
-    - Newly created user identity generated via fabric CA will now be used to invoke chaincode on our network.
+9. Now comes `chaincode` i.e. our `smartcontract` part, in fabric 2.x version new chaincode 4 stage lifecycle is introduces i.e. `1.package`, `2.install`, `3.approve` then finally `4.commit` the chaincode for smartcontract deployment in Fabric.
 
-13. Now our client app is ready to handle request and invoke chaincode -> Now test the controllers by hitting request to the server.
+```bash
+./scripts/deploySmartContract.sh
+```
 
-14. Some Dashboard URLs
-    - CouchDB_Fauxton Dashboard URL -> http://\<IP>:5984/\_utils
-    - Portainer URL -> http://\<IP>:9000
+   - Check out `fabricLedgerContract.tar.gz` file created at `package` stage.
+   - Also check out new `dev-peer containers` built up and running there are known as `chaincode containers` with their specific `smartcontract version` like `v1`, `v2` and so on.
 
-### **-- Setup Hyperledger Explorer for Dashboard Monitoring --**
+10. (*OPTIONAL STEP*) : For testing chaincode invocation. This will check if chaincode is working via `peer chaincode invoke` command.
 
-> :memo: **Note:** From now on 'fabric-explorer' directory under 'FabricV2_SampleNetworkApp' directory will be home for all the below mentioned changes.
+```bash
+./scripts/invokeContract.sh
+```
 
-1. Make sure the 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./fabric-explorer** must have same value as of 'COMPOSE_PROJECT_NAME' variable in **.env** file under **./FabricV2_SampleNetworkApp**.
+   - Check if invoked transaction is `committed` or `failed` - if successfully committed then chaincode is fine and ready to handle request by our application.
 
-   - So that explorer containers can be created in same docker network in which fabric network is running.
-
-2. The fabric's network full name to be mentioned in **config.json** file under 'network-configs' key.
-
-   - For example -
-
+11. Now we change our directory to this `./organizations/clientOrg/app` directory to run our application.
+   ```bash
+   cd organizations/clientOrg/app
    ```
-   {
-      "network-configs": {
-         "fabric_net_fbn": {
-            "name": "Explorer Test Network",
-            "profile": "./connection-profile/test-network.json"
-         }
-      },
-      "license": "Apache-2.0"
-   }
-   ```
+- Installation of node modules packages. *(Node version must be v20.14)*
+```bash
+npm i
+```
+- Finally start our node server. 
+```bash 
+npm start
+```
 
-   - Under 'network-configs' -> "name" can be any name you want to give to your explorer dashboard like currently it is - "Explorer Test Network"
+If server start smoothly without showing any error then -
+   - Check out `./organizations/clientOrg/app/identity` directory containing `wallet` identities for our `admin` and `user`. These are generated as identities for our client application.
+   - This newly created user identity generated via `fabric CA` will now be used by out application to invoke chaincode.
+   - Finally our client app is ready to handle request and invoke chaincode so now test the application.
+## Additional AddOn Features
+### Hyperledger Explorer
 
-3. Now in **./docker-compose.yaml** file -- edit 'networks' just like you mentioned in your fabric's docker-compose network files. **So that explorer containers are created in same network as your fabric network**
+An `interactive` and `real-time` visualizations of our fabric blockchain and its data related insights in a user-friendly manner.
 
-4. Now go to the FabricV2_SampleNetworkApp directory.
+Run this script from `FabricV2_SampleNetworkApp` directory -
 
-   - To start explorer then run _./scripts/start_explorer.sh_
-   - To stop explorer then run _./scripts/stop_explorer.sh_
-   - To remove all explorer containers then run _./scripts/remove_explorer.sh_
+```bash
+./scripts/start_explorer.sh
+```
 
-5. Now open the Hyperledger Explorer dashboard on URL -> http://\<IP>:8080
+### On Chain to Off Chain Data Sync
 
-6. If Explorer's service is not accessible on port 8080 -> Then there might be some issue so check the logs of fabric-explorer container.
+Syncing On Chain blocks data to Off Chain database for following below purpose -
 
-   - It may be related to wrong docker network name. **So please check the fabric-explorer container logs**
-   - Also after resolving the error, delete the volumes created by fabric explorer
+- Handle `complex queries`.
+- To create `analytics` and `statistical` dashboard therefore handle its `repeated query load` via Off Chain database. Therefore generating `less load on the On Chain ledger` and `enhancing its performance`.
 
-     - These two volumes are:
+First Run the mongodb in a Dockerized way.
 
-       1. fabric_net_pgdata
-       2. fabric_net_walletstore
+```bash
+docker run -d -p 27017:27017 -v /usr/mongo_offchaindb/:/data/db --name mongo_offchaindb mongo
+```
 
-     - So delete these two volumes by running 'docker volume rm' command available in docker. **(Only delete if you faced error in running Explorer service)**
-     - Now recreate the explorer container as mentioned in step - 4.
+Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.  
 
-### **-- Use OffChain Data Sync --**
-
-> :memo: **Note:** Currently OffChain is implemented using CouchDB as a OffChain DB. So u need to run this new OffChain CouchDB service.
-
-1. If you are using CouchDB as OffChain DB then run this docker container command and run a local couchDB instance separately. Run this => _docker run --publish 5990:5984 -v /usr/offchaindb/:/opt/couchdb/data --detach --name offchaindb couchdb:2.3.1_ . Your OffChain CouchDB will run at port '5990'.
-
-2. Now go to this .env file in application folder at 'FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env'. And set or change the environment variable 'ALLOW_OFFCHAIN_SYNC' to true.
-
-3. (OPTIONAL) If you running or managing your own CouchDB instance instead of following step 1. Then also set the environment variable 'COUCHDB_ADDRESS' to your instance Ip and port mapped correctly in same .env file mentioned in previous step.
-
-4. Now when you run the application node server as mentioned in previous guide to start network, then you will notice a text file will be generated with name _nextblock.txt_ at 'FabricV2_SampleNetworkApp/organizations/clientOrg/app/nextblock.txt' path. Now this text file will hold the block number to be processed in the next upcoming transaction in the network to facilitate syncing of OnChain data to the OffChain Data source. So initially in the fresh network it will be set to '0'.
+`In case if you running your own full non dockerized version of mongodb then edit OFFCHAIN_MONGODB_ADDRESS environment variable in same .env file.`
 
 
-**Please Star ⭐ This Repository.**
+## Tech Stack
+
+**Application Server:** Node, Express, JS
+
+**Blockchain Backend:** Hyperledger Fabric, SmartContract, Docker, Shell Script
+
+## Authors
+
+- [@vikash-ftw](https://github.com/vikash-ftw)
+
+
+## Feedback
+
+If you have any feedback, please reach out to me at vikashbatham97@gmail.com
+
+***If you loved my work then please leave a  Star ⭐ to this Repository.***
