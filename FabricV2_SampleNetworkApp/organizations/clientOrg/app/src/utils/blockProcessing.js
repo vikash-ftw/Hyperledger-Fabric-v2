@@ -155,6 +155,7 @@ const processPendingBlocks = async (ProcessingMap, connection, maxRetries = 2) =
     console.log("-- Starting Processing Pending Blocks --");
 
     let attempt = 0;
+    let waitingLogged = false;
     while(true) {
         await delay(500); // 500 ms polling delay
 
@@ -163,13 +164,17 @@ const processPendingBlocks = async (ProcessingMap, connection, maxRetries = 2) =
         // retrieve block from the map by block number
         let processBlock = ProcessingMap.get(nextBlockNumber);
 
-        console.log(`-- Checking block: ${nextBlockNumber} | Found: ${!!processBlock} --`);
         // if no block is available then wait for blocks to come
         if (processBlock === undefined) {
-            console.log("Waiting for next block for 2 sec ...");
+            if (!waitingLogged) {
+                console.log(">> Waiting for next block...");
+                waitingLogged = true;
+            }
             await delay(2000); // 2 sec delay
             continue;
         }
+        console.log(`-- Checking block: ${nextBlockNumber} | Found: ${!!processBlock} --`);
+        waitingLogged = false;
 
         try {
             // process the block by calling processBlockEvent
