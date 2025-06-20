@@ -19,29 +19,29 @@ const router = Router();
 
 router.route("/addProduct").post(addProduct);
 
-router.route("/getProduct").post(getProductById);
+router.route("/getProduct").get(getProductById);
 
 router
   .route("/:productNumber")
   .delete(deleteProductById)
   .patch(updateProductOwner);
 
-router.route("/queryByProductOwner").post(queryOnProductOwner);
+router.route("/queryByProductOwner").get(queryOnProductOwner);
 
-router.route("/queryByProductName").post(queryOnProductName);
+router.route("/queryByProductName").get(queryOnProductName);
 
 // Pagination router for queryByProductOwner
 router
   .route("/queryByProductOwnerWithPagination")
-  .post(queryOnProductOwnerWithPagination);
+  .get(queryOnProductOwnerWithPagination);
 
-router.route("/getTxnHistory").post(getTransactionHistory);
+router.route("/getTxnHistory").get(getTransactionHistory);
 
 // add data with composite key
 router.route("/addProductCompositeKey").post(addProductWithCompositeKey);
 // query data with partial composite key
-router.route("/queryByPartialCompositeKey").post(queryOnProductWithPartialCompositeKey);
+router.route("/queryByPartialCompositeKey").get(queryOnProductWithPartialCompositeKey);
 // query data with key range
-router.route("/queryProductByKeyRange").post(queryOnProductByKeyRange);
+router.route("/queryProductByKeyRange").get(queryOnProductByKeyRange);
 
 export default router;
