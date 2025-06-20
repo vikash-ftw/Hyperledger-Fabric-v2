@@ -115,7 +115,7 @@ async function writeValuesToMongoDB(db, channelname, writeObject) {
 
             // if the key is marked for deletion, remove it from MongoDB
             if (keyvalue.is_delete === true) {
-                console.log(`**-- Sending to MongoDB Delete=> Key:${keyvalue.key} --**`);
+                console.log(`**-- Sending to MongoDB Delete=> DLT txnID: ${writeObject.tx_id} Key:${keyvalue.key} --**`);
                 await mongodbutil.deleteRecord(db, dbname, keyvalue.key);
             }
             // if the value is a valid JSON string, parse and insert/update it
@@ -127,7 +127,7 @@ async function writeValuesToMongoDB(db, channelname, writeObject) {
                     txnId: writeObject.tx_id,
                     timestamp: writeObject.timestamp,
                 }
-                console.log(`**-- Sending to MongoDB Write=> Key:${keyvalue.key} --**`);
+                console.log(`**-- Sending to MongoDB Write=> DLT txnID: ${writeObject.tx_id} Key:${keyvalue.key} --**`);
                 await mongodbutil.writeToMongoDB(db, dbname, keyvalue.key, myOffChainData);
             }
         }

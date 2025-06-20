@@ -1,8 +1,7 @@
 import { blockListener } from "./blockListener.js";
 import { processPendingBlocks } from "./blockProcessing.js";
 import { ProcessingMap } from "./blockMap.js";
-import { getMongoDBConnection } from "./offChainConnectionHandler.js";
-import mongodbutil from "./mongodbutil.js";
+import mongodbutil, { getMongoDatabase } from "./mongodbutil.js";
 
 // Color codes for console logging
 const RED = "\x1b[31m\n";
@@ -11,13 +10,13 @@ const BLUE = "\x1b[34m";
 const RESET = "\x1b[0m";
 
 // MongoDB variables
-let db;
-let nextBlockCollection = process.env.COUNTER_COLLECTION;
+let db; // Database connection instance variable
+const nextBlockCollection = process.env.COUNTER_COLLECTION;
+const mongoOffChainDatabaseName = process.env.OFFCHAIN_MONGODB_DATABASE;
 
 const initiateNextBlockDocument = async() => {
-    const client = await getMongoDBConnection();
     // defining DB name
-    db = client.db("fabric_offchain");
+    db = await getMongoDatabase(mongoOffChainDatabaseName);
     const flag = await mongodbutil.createCollectionIfNotExists(db, nextBlockCollection);
     if(flag) {
         await updateNextBlock(-1);

@@ -1,5 +1,37 @@
 'use strict';
 
+import { MongoClient } from 'mongodb';
+
+// Singleton MongoDB client
+let client = null;
+
+/**
+ * MongoDB connection helper
+ */
+export const initializeMongoDBConnection = async() => {
+    if(client) {
+        return client; // Already initialized
+    }
+    try {
+        const mongo_URL = process.env.OFFCHAIN_MONGODB_ADDRESS;
+
+        const client = new MongoClient(mongo_URL);
+
+        // use connect method to connect to the server
+        await client.connect();
+        console.log("Connected successfully to MongoDB server");
+        return client;
+    } catch(err) {
+        console.error(`!! MongoDB connection failed: ${err.message}`);
+        throw err;
+    }    
+}
+
+export const getMongoDatabase = async(dbName) => {
+    let mongoClient = await initializeMongoDBConnection();
+    return mongoClient.db(dbName);
+}
+
 /**
  * Create a collection if it does not exist (MongoDB creates it automatically on insert).
  */
