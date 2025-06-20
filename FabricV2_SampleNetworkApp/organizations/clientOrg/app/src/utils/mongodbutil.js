@@ -10,12 +10,13 @@ let client = null;
  */
 export const initializeMongoDBConnection = async() => {
     if(client) {
+        console.log("Provided Existing MongoDB Pool Connection Client")
         return client; // Already initialized
     }
     try {
         const mongo_URL = process.env.OFFCHAIN_MONGODB_ADDRESS;
 
-        const client = new MongoClient(mongo_URL);
+        client = new MongoClient(mongo_URL);
 
         // use connect method to connect to the server
         await client.connect();
