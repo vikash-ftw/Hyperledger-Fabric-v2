@@ -144,7 +144,7 @@ Syncing On Chain blocks data to Off Chain database for following below purpose -
 First Run the mongodb in a Dockerized way.
 
 ```bash
-docker run -d -p 27017:27017 -v /usr/mongo_offchaindb/:/data/db --name mongo_offchaindb mongo:8.0.10
+docker run -d -p 27017:27017 -v /var/mongo_offchaindb/:/data/db --name mongo_offchaindb mongo:8.0.10
 ```
 
 Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.
