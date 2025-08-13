@@ -276,6 +276,7 @@ queryInstalled
 
 ## approve Org1
 approveForMyOrg 
+
 ## check whether the chaincode definition is ready to be committed, orgs one should be approved
 checkCommitReadiness
 
