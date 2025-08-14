@@ -27,19 +27,41 @@ const singletonConnection = (function () {
 
       const wallet = await buildWallet(Wallets, walletPath);
 
-      // // Gateway Options
+      // Gateway Options
+      // Defining Event Handling option - eventHandlerOptions
 
-      // // Defining Event Handling option - eventHandlerOptions
-      // const connectOptions = {
-      //   wallet,
-      //   identity: userId,
-      //   discovery: { enabled: true, asLocalhost: true },
-      //   eventHandlerOptions: {
-      //     strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ALLFORTX,
-      //   },
-      // };
+      // NETWORK_SCOPE_ANYFORTX : Ensures that at least one endorsing peer in the entire network has committed the
+      // transaction (For lightweight, fast transaction confirmations)
+      /*
+      const connectOptions = {
+        wallet,
+        identity: userId,
+        discovery: { enabled: true, asLocalhost: true },
+        eventHandlerOptions: {
+          commitTimeout: 60, // 60s
+          endorseTimeout: 30, // 30s
+          strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ANYFORTX,
+        },
+      };
+      */
 
-      // // Using default event Handling option if not specified explicitly
+      // NETWORK_SCOPE_ALLFORTX : Ensures that all endorsing peer in the entire network has committed the
+      // transaction and will wait until successful events from all peers in the network are received (Comparatively slow 
+      // but flow strict endorsing policy)
+      /*
+      const connectOptions = {
+        wallet,
+        identity: userId,
+        discovery: { enabled: true, asLocalhost: true },
+        eventHandlerOptions: {
+          commitTimeout: 60, // 60s
+          endorseTimeout: 30, // 30s
+          strategy: DefaultEventHandlerStrategies.NETWORK_SCOPE_ALLFORTX,
+        },
+      };
+      */
+
+      // Using default event Handling option if not specified explicitly
       const connectOptions = {
         wallet,
         identity: userId,
