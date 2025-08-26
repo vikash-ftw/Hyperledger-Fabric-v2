@@ -171,4 +171,8 @@ To view the data on GUI then checkout Compass, download and install it on your O
 
 If you have any feedback, please reach out to me at vikashbatham97@gmail.com
 
+## Stars 🌟
+
 ***If you loved my work then please leave a  Star ⭐ to this Repository.***
+
+[![Stars](https://starchart.cc/vikash-ftw/Hyperledger-Fabric-v2.svg?variant=adaptive)](https://starchart.cc/vikash-ftw/Hyperledger-Fabric-v2)
