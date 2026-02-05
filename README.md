@@ -120,6 +120,8 @@ If server start smoothly without showing any error then -
 
 To access the CouchDB ledger UI on browser go to `http://localhost:5984/_utils/#` 
 
+#### Fabric CA Certificate Renewal - [Document](https://docs.google.com/document/d/1eoL_KFoH2jLIeprtTKx73gT3Le-nTqMd_XN26-QyMYs/edit?usp=sharing)
+
 ## Additional AddOn Features
 ### Hyperledger Explorer
 
