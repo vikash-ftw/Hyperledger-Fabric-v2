@@ -5,9 +5,8 @@ import { Wallets } from "fabric-network";
 import { buildWallet } from "./AppUtil.service.js";
 import {
   buildCAClient,
-  registerAndEnrollUser,
   enrollAdmin,
-  isUserExist,
+  registerAndEnrollUser
 } from "./CAUtil.service.js";
 import { getCCP } from "./buildCCP.service.js";
 import path from "path";
@@ -54,14 +53,4 @@ const registerUser = async ({ OrgMSP, userId }) => {
   return { wallet };
 };
 
-const userExist = async ({ OrgMSP, userId }) => {
-  let org = Number(OrgMSP.match(/\d/g).join(""));
-  let ccp = getCCP(org);
-  const caClient = buildCAClient(FabricCAServices, ccp, `ca-org${org}`);
-  // setup the wallet to hold the credentials of the application user
-  const wallet = await buildWallet(Wallets, walletPath);
-  const result = await isUserExist(wallet, userId);
-  return result;
-};
-
-export { registerUser, userExist };
+export { registerUser };

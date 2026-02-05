@@ -2,6 +2,7 @@
 
 const adminUserId = process.env.CA_ADMIN_USERID;
 const adminUserPassword = process.env.CA_ADMIN_USER_PASSWORD;
+const re_enrollUser = process.env.RE_ENROLL_USER_ID.toLowerCase();
 
 /**
  *
@@ -75,6 +76,8 @@ const registerAndEnrollUser = async (
       console.log(
         `An identity for the user ${userId} already exists in the wallet`
       );
+      if(re_enrollUser === "true") 
+        await reenrollUserIdentity(caClient, wallet, orgMspId, userId);
       return;
     }
 
@@ -129,12 +132,46 @@ const registerAndEnrollUser = async (
 };
 
 const isUserExist = async (wallet, userId) => {
-  console.log("userExist: wallet path", wallet);
+  console.log("Checking identity at wallet: ", wallet);
   const identity = await wallet.get(userId);
   if (!identity) {
-    throw new Error("Identity not exist ");
+    return false;
   }
   return true;
 };
 
-export { buildCAClient, enrollAdmin, registerAndEnrollUser, isUserExist };
+const reenrollUserIdentity = async(
+  caClient,
+  wallet,
+  orgMspId,
+  userId,
+) => {
+  console.log(`**-- Re-enrolling the user: ${userId} --**`);
+  if(await isUserExist(wallet, userId)) {
+    // 1. Get the existing identity from the wallet
+    const identity = await wallet.get(userId);
+
+    // 2. Create a provider to convert the identity to a user context
+    const provider = wallet.getProviderRegistry().getProvider(identity.type);
+    const userContext = await provider.getUserContext(identity, userId);
+
+    // 3. Re-enroll (This uses the current cert to ask for a new one)
+    // Ensure CA has 'reenrollignorecertexpiry: true' if the cert is already expired
+    const enrollment = await caClient.reenroll(userContext);
+    // 4. Update the wallet with the new certificate
+    const renewedIdentity = {
+        credentials: {
+            certificate: enrollment.certificate,
+            privateKey: enrollment.key.toBytes(),
+        },
+        mspId: orgMspId,
+        type: "X.509",
+    };
+    await wallet.put(userId, renewedIdentity);
+    console.log(
+      `**-- Successfully Re-enrolled the user: ${userId} and imported it into the wallet --**`
+    );
+  }
+}
+
+export { buildCAClient, enrollAdmin, registerAndEnrollUser};

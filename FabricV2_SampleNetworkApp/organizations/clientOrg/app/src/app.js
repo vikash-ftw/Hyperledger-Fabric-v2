@@ -40,8 +40,7 @@ import { initiateNextBlockDocument, handleTxnBlockEvent } from "./utils/offChain
 
 const startServer = async () => {
   try {
-    const user = await register();
-    console.log("User created or not : ", user);
+    await register();
     console.log("Checking Gateway Connection...");
     const instance = await initiateConnection();
     console.log("** Gateway Connection Established **");
