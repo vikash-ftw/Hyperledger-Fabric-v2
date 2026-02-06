@@ -14,7 +14,7 @@
 
 - Download or check the required dependencies: [Dependencies](https://docs.google.com/document/d/1cF6vgNphqKYm4eFN2bJQcwKCz01P7u8SSJJ9oXDqGSs/edit?usp=sharing)
 
-1. Make sure to remove `hyperledger` directory (if present) under `/var` directory on your system.
+1. Make sure to remove `hyperledger` directory (if present) under `/var` directory on our system.
 
 2. Run this script to install all fabric binaries of specific version mentioned in script.
 
@@ -83,16 +83,22 @@ cd FabricV2_SampleNetworkApp
 
    - Check out `channel-artifacts` directory containing 3 files : `anchor` and `channel` related `.tx` files and also `.block` file of channel.
 
-9. Now comes `chaincode` i.e. our `smartcontract` part, in fabric 2.x version new chaincode 4 stage lifecycle is introduces i.e. `1.package`, `2.install`, `3.approve` then finally `4.commit` the chaincode for smartcontract deployment in Fabric.
+9. Now comes the `chaincode` part i.e. our `smartcontract`, beginning with fabric 2.x version new chaincode methodology i.e. 4 stage lifecycle process is introduced, this involves `1.package`, `2.install`, `3.approve` then finally `4.commit` stages in the chaincode deployment process.
+
+   - Currently two chaincode types are supported based on language types i.e. `Node` and `Go (Golang)`.
+   - We need to edit the `deploySmartContract.sh` script file for selecting which chaincode we are going to deploy and use. There are some variables related to `chaincode_language`, `chaincode_path` and `chaincode_name` present in this script, so we just need to comment and uncomment based on these factors.
+   - After deploying chaincode we need to use chaincode in our SDK application developed in Node, for that just edit the `.env` file present in `./organizations/clientOrg/app` directory and comment or uncomment variables related to `chaincode_name`.
+   - These changes needed to be done beforehand so that specific chaincode can be deployed and used.
+   - `By Default Node based chaincode configs are applied everywhere.`
 
 ```bash
 ./scripts/deploySmartContract.sh
 ```
 
-   - Check out `fabricLedgerContract.tar.gz` file created at `package` stage.
-   - Also check out new `dev-peer containers` built up and running there are known as `chaincode containers` with their specific `smartcontract version` like `v1`, `v2` and so on.
+   - Check the Smartcontract tar file will be created at `packaging` stage.
+   - Also check out new `dev-peer containers` built up and running there are known as `chaincode containers` with their specific `smartcontract versions`.
 
-10. (*OPTIONAL STEP*) : For testing chaincode invocation. This will check if chaincode is working via `peer chaincode invoke` command.
+10. (*OPTIONAL STEP*) : For testing chaincode invocation. This will check if chaincode is working via `peer chaincode invoke` command. Also edit the `chaincode_name` variable in this script based on our chaincode type before executing.
 
 ```bash
 ./scripts/invokeContract.sh
@@ -132,7 +138,7 @@ Run this script from `FabricV2_SampleNetworkApp` directory -
 ```bash
 ./scripts/start_explorer.sh
 ```
-Now you can access the Explorer UI on browser with port **8080**.
+Now we can access the Explorer UI on browser with port **8080**.
 
 If facing any error in accessing Explorer UI then check the container logs of explorer via `docker logs <container_name/Id>` command, there are two explorer containers one for explorer database and another one for main explorer. So check the main explorer container with name `explorer.mynetwork.com` and image name `ghcr.io/hyperledger-labs/explorer`.
 
@@ -153,9 +159,9 @@ Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app
 
 Here MongoDB will run on the port **27017**. 
 
-To view the data on GUI then checkout Compass, download and install it on your OS - [MongoDB_Compass](https://www.mongodb.com/products/tools/compass)
+To view the data on GUI then checkout Compass, download and install - [MongoDB_Compass](https://www.mongodb.com/products/tools/compass)
 
-`In case if you running your own full non dockerized version of mongodb then edit OFFCHAIN_MONGODB_ADDRESS environment variable in same .env file.`
+`In case if we are running our own full non dockerized version of mongodb then we need to edit OFFCHAIN_MONGODB_ADDRESS environment variable in same .env file.`
 
 
 ## Tech Stack
