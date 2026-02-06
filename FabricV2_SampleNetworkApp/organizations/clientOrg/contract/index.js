@@ -1,6 +1,6 @@
 "use strict";
 
-const FabricLedgerContract = require("./lib/fabricledgercontract.js");
+const FabricSmartContract = require("./lib/fabric-smartcontract.js");
 
-module.exports.FabricLedgerContract = FabricLedgerContract;
-module.exports.contracts = [FabricLedgerContract];
+module.exports.FabricSmartContract = FabricSmartContract;
+module.exports.contracts = [FabricSmartContract];

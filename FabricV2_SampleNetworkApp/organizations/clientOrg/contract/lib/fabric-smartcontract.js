@@ -14,7 +14,7 @@ const { Contract } = require("fabric-contract-api");
  * Define FabricLedger smart contract by extending Fabric Contract class
  *
  */
-class FabricLedgerContract extends Contract {
+class FabricSmartContract extends Contract {
   async InitLedger(ctx) {
     console.info("--- Ledger initialized ---");
   }
@@ -360,4 +360,4 @@ class FabricLedgerContract extends Contract {
 
 }
 
-module.exports = FabricLedgerContract;
+module.exports = FabricSmartContract;
