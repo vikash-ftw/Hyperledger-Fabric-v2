@@ -3,12 +3,14 @@
 
 # taking channel as argument otherwise using default value
 CHANNEL_NAME="${1:-samplechannel}"
-CC_SRC_LANGUAGE=javascript
 VERSION=1
 DELAY=3
 MAX_RETRY=5
 VERBOSE=true
-CHAINCODE_NAME="fabricLedgerContract"
+
+# Choose Either One based on your smartcontract type
+# CHAINCODE_NAME="fabricSmartContractGo"   # for Go chaincode
+CHAINCODE_NAME="fabricSmartContractNode"   # for Node chaincode
 
 # Adding fabric bin to path
 export PATH=${PWD}/../bin:$PATH

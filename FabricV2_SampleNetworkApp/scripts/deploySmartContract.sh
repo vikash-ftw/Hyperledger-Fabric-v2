@@ -17,11 +17,17 @@ fi
 MAX_RETRY="3"
 VERBOSE="false"
 
-CC_SRC_LANGUAGE="javascript"
-CC_SRC_LANGUAGE=`echo "$CC_SRC_LANGUAGE" | tr [:upper:] [:lower:]`
-CC_RUNTIME_LANGUAGE=node # chaincode runtime language is node.js
-CC_SRC_PATH="organizations/clientOrg/contract/"
-CHAINCODE_NAME="fabricLedgerContract"
+# Choose Either One based on your smartcontract type
+# CC_SRC_LANGUAGE="golang"    # for Go
+CC_SRC_LANGUAGE="node"    # for Node
+
+# CHAINCODE_NAME="fabricSmartContractGo"          # for Go
+CHAINCODE_NAME="fabricSmartContractNode"      # for Node
+
+# CC_SRC_PATH="organizations/clientOrg/contract-go/"    # for Go smartcontract path
+CC_SRC_PATH="organizations/clientOrg/contract/"     # for Node smartcontract path
+
+
 
 echo
 echo " ____    _____      _      ____    _____ "
@@ -92,7 +98,7 @@ packageChaincode() {
   ORG=${ORG_NAMES[0]} # usign Org1 from Org array
   setGlobalVarsForOrg1
   set -x
-  peer lifecycle chaincode package ${CHAINCODE_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CHAINCODE_NAME}_v${VERSION} >&./logs/pkg_chaincode_log.txt
+  peer lifecycle chaincode package ${CHAINCODE_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_SRC_LANGUAGE} --label ${CHAINCODE_NAME}_v${VERSION} >&./logs/pkg_chaincode_log.txt
   res=$?
   set +x
   cat ./logs/pkg_chaincode_log.txt
