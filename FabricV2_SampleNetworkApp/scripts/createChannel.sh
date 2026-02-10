@@ -72,7 +72,7 @@ createChannelTxn() {
   	verifyResult $res "txn file generated for $CHANNEL_NAME" "Failed in generating $CHANNEL_NAME txn file!"
 }
 
-createAncorPeerTxn() {
+createAnchorPeerTxn() {
 	displayMsg "--- Creating org anchor peer txn for ${CHANNEL_NAME} ---"
 	#for orgmsp in Org1MSP Org2MSP Org3MSP; do
     for orgmsp in Org1MSP; do
@@ -200,7 +200,7 @@ createChannelTxn
 
 ## Create anchorpeertx
 echo "### Generating anchor peer update transactions ###"
-createAncorPeerTxn
+createAnchorPeerTxn
 
 export FABRIC_CFG_PATH=$PWD/../config/
 
