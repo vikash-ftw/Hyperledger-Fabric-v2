@@ -1,7 +1,7 @@
 "use strict";
 
 const adminUserId = process.env.CA_ADMIN_USERID;
-const adminUserPassword = process.env.CA_ADMIN_USER_PASSWORD;
+const adminPassword = process.env.CA_ADMIN_PASSWORD;
 const re_enrollUser = process.env.RE_ENROLL_USER_ID.toLowerCase();
 
 /**
@@ -39,7 +39,7 @@ const enrollAdmin = async (caClient, wallet, orgMspId) => {
     // Enroll the admin user, and import the new identity into the wallet.
     const enrollment = await caClient.enroll({
       enrollmentID: adminUserId,
-      enrollmentSecret: adminUserPassword,
+      enrollmentSecret: adminPassword,
     });
     console.log(`adminEnrollment - ${enrollment}`);
     const x509Identity = {
