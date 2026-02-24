@@ -9,8 +9,8 @@ MAX_RETRY=5
 VERBOSE=true
 
 # Choose Either One based on your smartcontract type
-# CHAINCODE_NAME="fabricSmartContractGo"   # for Go chaincode
-CHAINCODE_NAME="fabricSmartContractNode"   # for Node chaincode
+# CHAINCODE_NAME="fabric-smartcontract-go"   # for Go chaincode
+CHAINCODE_NAME="fabric-smartcontract-node"   # for Node chaincode
 
 # Adding fabric bin to path
 export PATH=${PWD}/../bin:$PATH
