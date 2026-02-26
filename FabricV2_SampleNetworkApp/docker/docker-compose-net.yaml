@@ -21,7 +21,7 @@ networks:
 # currently 2 orderers of org1 and 4 peers of org1 and 4 couchdb for each peer
 services:
   orderer.example.com:
-    container_name: orderer.example.com
+    container_name: orderer
     image: hyperledger/fabric-orderer:$IMAGE_TAG_ORDERER
     environment:
       - FABRIC_LOGGING_SPEC=INFO
@@ -54,7 +54,7 @@ services:
       - fbn
 
   orderer2.example.com:
-    container_name: orderer2.example.com
+    container_name: orderer2
     image: hyperledger/fabric-orderer:$IMAGE_TAG_ORDERER
     environment:
       - FABRIC_LOGGING_SPEC=INFO
@@ -87,7 +87,7 @@ services:
       - fbn
 
   peer0.org1.example.com:
-    container_name: peer0.org1.example.com
+    container_name: peer0
     image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
     environment:
       # Generic peer variables
@@ -124,7 +124,7 @@ services:
       - fbn
 
   peer1.org1.example.com:
-    container_name: peer1.org1.example.com
+    container_name: peer1
     image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
     environment:
       # Generic peer variables
@@ -161,7 +161,7 @@ services:
       - fbn
 
   peer2.org1.example.com:
-    container_name: peer2.org1.example.com
+    container_name: peer2
     image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
     environment:
       # Generic peer variables
@@ -198,7 +198,7 @@ services:
       - fbn
 
   peer3.org1.example.com:
-    container_name: peer3.org1.example.com
+    container_name: peer3
     image: hyperledger/fabric-peer:$IMAGE_TAG_PEER
     environment:
       # Generic peer variables
