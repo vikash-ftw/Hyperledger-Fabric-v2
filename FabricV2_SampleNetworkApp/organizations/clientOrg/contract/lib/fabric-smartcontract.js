@@ -1,5 +1,5 @@
 /**
- * A Fabric Ledger Smart Contract in JS
+ * A Fabric Ledger SmartContract in JS
  *
  * Author - Vikash Batham
  *

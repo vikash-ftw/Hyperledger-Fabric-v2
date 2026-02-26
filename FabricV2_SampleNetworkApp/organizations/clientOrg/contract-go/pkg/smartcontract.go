@@ -1,3 +1,9 @@
+/*
+A Fabric Ledger SmartContract in Go
+
+Author - Vikash Batham
+*/
+
 package pkg
 
 import (
