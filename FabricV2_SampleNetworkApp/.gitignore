@@ -16,11 +16,5 @@ logs/*
 system-genesis-block/
 
 # tar files
-*.tar
-*.tar.gz
-
-
-
-
-
-
+*.gz
+*.tgz
