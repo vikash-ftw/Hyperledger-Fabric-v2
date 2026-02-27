@@ -21,11 +21,11 @@ VERBOSE="false"
 # CC_SRC_LANGUAGE="golang"    # for Go
 CC_SRC_LANGUAGE="node"    # for Node
 
-# CHAINCODE_NAME="fabric-smartcontract-go"          # for Go
-CHAINCODE_NAME="fabric-smartcontract-node"      # for Node
+# CHAINCODE_NAME="smartcontract-go"          # for Go
+CHAINCODE_NAME="smartcontract-node"      # for Node
 
 # CC_SRC_PATH="organizations/clientOrg/contract-go/"    # for Go smartcontract path
-CC_SRC_PATH="organizations/clientOrg/contract/"     # for Node smartcontract path
+CC_SRC_PATH="organizations/clientOrg/contract-node/"     # for Node smartcontract path
 
 
 
