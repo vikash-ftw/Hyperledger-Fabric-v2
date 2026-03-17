@@ -12,6 +12,12 @@ logs/*
 # but logs should be there
 !logs/.gitkeep
 
+# exclude everything in temp
+temp
+
+# temp folder should be there
+!temp/.gitkeep
+
 # system-genesis-block
 system-genesis-block/
 

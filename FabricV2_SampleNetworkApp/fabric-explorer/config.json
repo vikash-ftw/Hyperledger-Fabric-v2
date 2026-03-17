@@ -1,8 +1,8 @@
 {
   "network-configs": {
-    "fabric_net_fbn": {
+    "my-network": {
       "name": "Explorer Test Network",
-      "profile": "./connection-profile/test-network.json"
+      "profile": "./connection-profile/explorer-profile.json"
     }
   },
   "license": "Apache-2.0"
