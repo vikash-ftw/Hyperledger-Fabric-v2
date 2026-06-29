@@ -11,3 +11,6 @@ package-lock.json
 
 # ignore .log files
 *.log
+
+# ignore swagger generated json file
+swagger-output.json

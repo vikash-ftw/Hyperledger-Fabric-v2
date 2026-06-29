@@ -8,7 +8,8 @@
     "node": ">=20.14"
   },
   "scripts": {
-    "start": "node -r dotenv/config ./src/app.js"
+    "swagger": "node -r dotenv/config src/utils/swagger.js",
+    "start": "npm run swagger && node -r dotenv/config ./src/app.js"
   },
   "keywords": [
     "express",
@@ -24,6 +25,10 @@
     "express": "^4.19.2",
     "fabric-ca-client": "2.2.20",
     "fabric-network": "2.2.20",
-    "mongodb": "6.17.0"
+    "mongodb": "6.17.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "swagger-autogen": "^2.23.7"
   }
 }
