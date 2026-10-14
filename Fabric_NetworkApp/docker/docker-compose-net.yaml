@@ -2,21 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-version: "2"
-
-# to persist data to Docker managed volumes
-# commented As direct host path are mapped instead of defined volumes
-volumes:
-  # orderer.example.com:
-  # orderer2.example.com:
-  # peer0.org1.example.com:
-  # peer1.org1.example.com:
-  # peer2.org1.example.com:
-  # peer3.org1.example.com:
-  portainer_data:
-
 networks:
-  fbn:
+  fabric-network:
+    name: fabric-network
 
 # currently 2 orderers of org1 and 4 peers of org1 and 4 couchdb for each peer
 services:
@@ -51,7 +39,7 @@ services:
     ports:
       - 7050:7050
     networks:
-      - fbn
+      - fabric-network
 
   orderer2.example.com:
     container_name: orderer2
@@ -84,7 +72,7 @@ services:
     ports:
       - 8050:7050
     networks:
-      - fbn
+      - fabric-network
 
   peer0.org1.example.com:
     container_name: peer0
@@ -92,7 +80,7 @@ services:
     environment:
       # Generic peer variables
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -121,7 +109,7 @@ services:
     ports:
       - 7051:7051
     networks:
-      - fbn
+      - fabric-network
 
   peer1.org1.example.com:
     container_name: peer1
@@ -129,7 +117,7 @@ services:
     environment:
       # Generic peer variables
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -158,7 +146,7 @@ services:
     ports:
       - 8051:8051
     networks:
-      - fbn
+      - fabric-network
 
   peer2.org1.example.com:
     container_name: peer2
@@ -166,7 +154,7 @@ services:
     environment:
       # Generic peer variables
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -195,7 +183,7 @@ services:
     ports:
       - 5051:5051
     networks:
-      - fbn
+      - fabric-network
 
   peer3.org1.example.com:
     container_name: peer3
@@ -203,7 +191,7 @@ services:
     environment:
       # Generic peer variables
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_fbn
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=fabric-network
       - FABRIC_LOGGING_SPEC=INFO
       #- FABRIC_LOGGING_SPEC=DEBUG
       - CORE_PEER_TLS_ENABLED=true
@@ -232,17 +220,4 @@ services:
     ports:
       - 6051:6051
     networks:
-      - fbn
-
-  # Portainer service
-  portainer:
-    container_name: portainer
-    image: portainer/portainer-ce:2.33.6
-    command: -H unix:///var/run/docker.sock
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    ports:
-      - 9000:9000
-    networks:
-      - fbn
+      - fabric-network

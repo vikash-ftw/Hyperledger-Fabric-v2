@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
-version: "2.1"
 
 volumes:
   pgdata:
   walletstore:
 
 networks:
-  fbn:
+  fabric-network:
+    name: fabric-network
 
 services:
   explorerdb.mynetwork.com:
@@ -25,7 +25,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
-      - fbn
+      - fabric-network
 
   explorer.mynetwork.com:
     image: ghcr.io/hyperledger-labs/explorer:latest
@@ -53,4 +53,4 @@ services:
       explorerdb.mynetwork.com:
         condition: service_healthy
     networks:
-      - fbn
+      - fabric-network

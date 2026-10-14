@@ -5,4 +5,4 @@ COMPOSE_FILE_EXPLORER=${PWD}/fabric-explorer/docker-compose.yaml
 
 COMPOSE_FILES="-f ${COMPOSE_FILE_EXPLORER}"
 
-docker-compose ${COMPOSE_FILES} stop
+docker compose ${COMPOSE_FILES} stop

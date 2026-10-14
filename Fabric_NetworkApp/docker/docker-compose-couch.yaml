@@ -3,10 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # define couch containers per peer
 
-version: "2"
-
 networks:
-  fbn:
+  fabric-network:
+    name: fabric-network
 
 # currently 4 couch for 4 peers
 services:
@@ -25,7 +24,7 @@ services:
     ports:
       - "5984:5984"
     networks:
-      - fbn
+      - fabric-network
 
   peer0.org1.example.com:
     environment:
@@ -52,7 +51,7 @@ services:
     ports:
       - "6984:5984"
     networks:
-      - fbn
+      - fabric-network
 
   peer1.org1.example.com:
     environment:
@@ -79,7 +78,7 @@ services:
     ports:
       - "7984:5984"
     networks:
-      - fbn
+      - fabric-network
 
   peer2.org1.example.com:
     environment:
@@ -106,7 +105,7 @@ services:
     ports:
       - "8984:5984"
     networks:
-      - fbn
+      - fabric-network
 
   peer3.org1.example.com:
     environment:

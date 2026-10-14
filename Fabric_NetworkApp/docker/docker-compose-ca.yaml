@@ -3,10 +3,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-version: "2"
-
 networks:
-  fbn:
+  fabric-network:
+    name: fabric-network
 
 services:
   ca_org1:
@@ -24,7 +23,7 @@ services:
       - ../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
     container_name: ca_org1
     networks:
-      - fbn
+      - fabric-network
 
   ca_orderer:
     image: hyperledger/fabric-ca:$IMAGE_TAG_CA
@@ -41,4 +40,4 @@ services:
       - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
     container_name: ca_orderer
     networks:
-      - fbn
+      - fabric-network

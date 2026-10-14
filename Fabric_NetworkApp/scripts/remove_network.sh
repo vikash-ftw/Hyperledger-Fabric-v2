@@ -18,4 +18,4 @@ if [ "${DATABASE}" == "couchdb" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_COUCH}"
 fi
 
-docker-compose --env-file $ENV_FILE ${COMPOSE_FILES} down --volumes --remove-orphans
+docker compose --env-file $ENV_FILE ${COMPOSE_FILES} down --volumes --remove-orphans

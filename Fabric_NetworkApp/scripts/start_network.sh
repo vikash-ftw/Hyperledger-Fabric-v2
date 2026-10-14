@@ -18,7 +18,7 @@ if [ "${DATABASE}" == "couchdb" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f ${COMPOSE_FILE_COUCH}"
 fi
 
-docker-compose --env-file $ENV_FILE ${COMPOSE_FILES} up -d 2>&1
+docker compose --env-file $ENV_FILE ${COMPOSE_FILES} up -d 2>&1
 
 if [ $? -ne 0 ]; then
     echo "ERROR !!!! Unable to start network"
