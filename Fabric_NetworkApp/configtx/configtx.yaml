@@ -44,6 +44,7 @@ Organizations:
         OrdererEndpoints:
             - orderer.example.com:7050
             - orderer2.example.com:7050
+            - orderer3.example.com:7050
 
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -193,6 +194,7 @@ Orderer: &OrdererDefaults
     Addresses:
         - orderer.example.com:7050
         - orderer2.example.com:7050
+        - orderer3.example.com:7050
 
     EtcdRaft:
         Consenters:
@@ -204,6 +206,10 @@ Orderer: &OrdererDefaults
           Port: 7050
           ClientTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
           ServerTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer2.example.com/tls/server.crt
+        - Host: orderer3.example.com
+          Port: 7050
+          ClientTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/example.com/orderers/orderer3.example.com/tls/server.crt
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s

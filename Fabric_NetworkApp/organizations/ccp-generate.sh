@@ -10,8 +10,6 @@ function json_ccp {
     sed -e "s/\${ORG}/$1/" \
         -e "s/\${P0PORT}/$2/" \
         -e "s/\${P1PORT}/$6/" \
-        -e "s/\${P2PORT}/$7/" \
-        -e "s/\${P3PORT}/$8/" \
         -e "s/\${CAPORT}/$3/" \
         -e "s#\${PEERPEM}#$PP#" \
         -e "s#\${CAPEM}#$CP#" \
@@ -24,8 +22,6 @@ function yaml_ccp {
     sed -e "s/\${ORG}/$1/" \
         -e "s/\${P0PORT}/$2/" \
         -e "s/\${P1PORT}/$6/" \
-        -e "s/\${P2PORT}/$7/" \
-        -e "s/\${P3PORT}/$8/" \
         -e "s/\${CAPORT}/$3/" \
         -e "s#\${PEERPEM}#$PP#" \
         -e "s#\${CAPEM}#$CP#" \
@@ -39,10 +35,8 @@ PEERPEM=organizations/peerOrganizations/org1.example.com/tlsca/tlsca.org1.exampl
 
 P0PORT=7051
 P1PORT=8051
-P2PORT=5051
-P3PORT=6051
 
-echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT $P2PORT $P3PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.json
-echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT $P2PORT $P3PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.yaml
+echo "$(json_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.json
+echo "$(yaml_ccp $ORG $P0PORT $CAPORT $PEERPEM $CAPEM $P1PORT)" > organizations/peerOrganizations/org1.example.com/connection-org1.yaml
 
 echo "-- Generated CCP json and yaml files in ./organizations/peerOrganizations/ directory --"
