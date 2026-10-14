@@ -1,8 +1,8 @@
 ## Hyperledger Fabric 2.x versions list
 
-- Check Hyperledger Fabric version 2.2 -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
+- Check version 2.2.15 (prior LTS) -> [v2.2](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/main)
 
-- Check Hyperledger Fabric version 2.5 (currently in development) -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
+- Check version 2.5.9 (current LTS) -> [v2.5](https://github.com/vikash-ftw/HyperledgerFabric-v2-setup/tree/release-2.5)
 
 ## Fabric Architecture Overview
 
@@ -26,10 +26,10 @@
 
 > :memo: **Note:** We can generate certificates and cryptographic key pairs (crypto-materials) that authenticate and authorize entities on the network via cryptogen (For testing and development purpose) or Fabric CA (For Production purpose) - We will use Fabric CA in our case.
 
-> :memo: **Note:** From now onwards for all the below steps our `FabricV2_SampleNetworkApp` directory will be our `project_home` to follow further step.
+> :memo: **Note:** From now onwards for all the below steps our `Fabric_NetworkApp` directory will be our `project_home` to follow further step.
 
 ```bash
-cd FabricV2_SampleNetworkApp
+cd Fabric_NetworkApp
 ```
 
 3. Now we run this script from `project_home` to start fabric-ca containers needed for crypto-materials. 
@@ -87,7 +87,7 @@ cd FabricV2_SampleNetworkApp
 
    - Currently two chaincode types are supported based on language types i.e. `Node` and `Go (Golang)`.
    - We need to edit the `deploySmartContract.sh` script file for selecting which chaincode we are going to deploy and use. There are some variables related to `chaincode_language`, `chaincode_path` and `chaincode_name` present in this script, so we just need to comment and uncomment based on these factors.
-   - After deploying chaincode we need to use chaincode in our SDK application developed in Node, for that just edit the `.env` file present in `./organizations/clientOrg/app` directory and comment or uncomment variables related to `chaincode_name`.
+   - After deploying chaincode we need to use chaincode in our SDK application developed in Node, for that just edit the `.env` file present in `./organizations/clientOrg/node-sdk-app` directory and comment or uncomment variables related to `chaincode_name`.
    - These changes needed to be done beforehand so that specific chaincode can be deployed and used.
    - `By Default Node based chaincode configs are applied everywhere.`
 
@@ -106,9 +106,9 @@ cd FabricV2_SampleNetworkApp
 
    - Check if invoked transaction is `committed` or `failed` - if successfully committed then chaincode is fine and ready to handle request by our application.
 
-11. Now we change our directory to this `./organizations/clientOrg/app` directory to run our application.
+11. Now we change our directory to this `./organizations/clientOrg/node-sdk-app` directory to run our application.
    ```bash
-   cd organizations/clientOrg/app
+   cd organizations/clientOrg/node-sdk-app
    ```
 - Installation of node modules packages. *(Node version must be v20.14)*
 ```bash
@@ -120,7 +120,7 @@ npm start
 ```
 
 If server start smoothly without showing any error then -
-   - Check out `./organizations/clientOrg/app/identity` directory containing `wallet` identities for our `admin` and `user`. These are generated as identities for our client application.
+   - Check out `./organizations/clientOrg/node-sdk-app/identity` directory containing `wallet` identities for our `admin` and `user`. These are generated as identities for our client application.
    - This newly created user identity generated via `fabric CA` will now be used by out application to invoke chaincode.
    - Finally our client app is ready to handle request and invoke chaincode so now test the application.
 
@@ -133,7 +133,7 @@ To access the CouchDB ledger UI on browser go to `http://localhost:5984/_utils/#
 
 An `interactive` and `real-time` visualizations of our fabric blockchain and its data related insights in a user-friendly manner.
 
-Run this script from `FabricV2_SampleNetworkApp` directory -
+Run this script from `Fabric_NetworkApp` directory -
 
 ```bash
 ./scripts/start_explorer.sh
@@ -155,7 +155,7 @@ First Run the mongodb in a Dockerized way.
 docker run -d -p 27017:27017 -v /var/mongo_offchaindb/:/data/db --name mongo_offchaindb mongo:8.0.10
 ```
 
-Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`FabricV2_SampleNetworkApp/organizations/clientOrg/app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.
+Then edit this Enviroment variable - `ALLOW_OFFCHAIN_SYNC` in a .env file at app directory (`Fabric_NetworkApp/organizations/clientOrg/node-sdk-app/.env`) by default this variable is set to `false` to set it `true`. Now stop the node server and run it again after saving these changes.
 
 Here MongoDB will run on the port **27017**. 
 
